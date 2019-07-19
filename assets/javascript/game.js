@@ -1,5 +1,7 @@
 setCardValue("#player-card", "0H");
 setCardValue("#opponent-card", "AD");
+setCardValue("#player-wild-1", "8C");
+setCardValue("#player-wild-2", "JS");
 
 function setCardValue(cardId, cardCode) {
     // set rank

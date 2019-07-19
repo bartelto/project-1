@@ -1,15 +1,41 @@
 /* Screen styling */
 
 
+#opponent-card {
+    top: 200px;
+    left: 300px;
+}
 
+#player-card {
+    top: 350px;
+    left: 300px;
+}
 
+#opponent-deck {
+    top: 32px;
+    left: 292px;
+}
 
+#player-deck {  
+    top: 510px;
+    left: 292px;
+}
+
+#player-wild-1 {
+    top: 350px;
+    left: 450px;
+}
+
+#player-wild-2 {
+    top: 350px;
+    left: 500px;
+}
 
 /* Playing card styling */
 .card, 
 .deck {
     display: inline-block;
-    position: relative;
+    position: absolute;
     width: 100px;
     height: 140px;
     border: solid black 1px;
@@ -73,6 +99,19 @@
     content:"♦";
 }
 
+.back {
+    background: 
+        linear-gradient(30deg, #bdbdbd 12%, transparent 12.5%, transparent 87%, #bdbdbd 87.5%, #bdbdbd 0), 
+        linear-gradient(150deg, #bdbdbd 12%, transparent 12.5%, transparent 87%, #bdbdbd 87.5%, #bdbdbd 0), 
+        linear-gradient(30deg, #bdbdbd 12%, transparent 12.5%, transparent 87%, #bdbdbd 87.5%, #bdbdbd 0), 
+        linear-gradient(150deg, #bdbdbd 12%, transparent 12.5%, transparent 87%, #bdbdbd 87.5%, #bdbdbd 0), 
+        linear-gradient(60deg, #dbdbdb 25%, transparent 25.5%, transparent 75%, #dbdbdb 75%, #dbdbdb 0), 
+        linear-gradient(60deg, #dbdbdb 25%, transparent 25.5%, transparent 75%, #dbdbdb 75%, #dbdbdb 0), #ccc;
+    background-position: 0 0, 0 0, 12px 21px, 12px 21px, 0 0, 12px 21px;
+    background-size: 24px 42px;
+    color: transparent;
+}
+
 .deck {
     background: 
         linear-gradient(30deg, #bdbdbd 12%, transparent 12.5%, transparent 87%, #bdbdbd 87.5%, #bdbdbd 0), 
@@ -81,8 +120,8 @@
         linear-gradient(150deg, #bdbdbd 12%, transparent 12.5%, transparent 87%, #bdbdbd 87.5%, #bdbdbd 0), 
         linear-gradient(60deg, #dbdbdb 25%, transparent 25.5%, transparent 75%, #dbdbdb 75%, #dbdbdb 0), 
         linear-gradient(60deg, #dbdbdb 25%, transparent 25.5%, transparent 75%, #dbdbdb 75%, #dbdbdb 0), #ccc;
-        background-position: 0 0, 0 0, 12px 21px, 12px 21px, 0 0, 12px 21px;
-        background-size: 24px 42px;
+    background-position: 0 0, 0 0, 12px 21px, 12px 21px, 0 0, 12px 21px;
+    background-size: 24px 42px;
     box-shadow: 
         1px 1px 0px white,
         2px 2px 0px black,
@@ -91,5 +130,6 @@
         5px 5px 0px white,
         6px 6px 0px black,
         7px 7px 0px white,
-        8px 8px 0px black;   
+        8px 8px 0px black,
+        10px 10px 2px #888888;;  
 }

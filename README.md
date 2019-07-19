@@ -1,1 +1,7 @@
-# project-1
+# War
+
+Team members:
+-- Logan Ayers
+-- Sandra Martinez
+-- Siva Boppana
+-- Todd Bartelt

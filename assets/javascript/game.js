@@ -41,9 +41,16 @@ $("#player-deck").on("click", function () {
     let randomCard = randomCards[Math.floor(Math.random() * randomCards.length)];
     setCardValue("#player-card", randomCard);
 });
+
 startGame();
+
 // Game Logic
 function startGame() {
+   // show game area & chat box
+    // display player names
+    // display avatars
+    // create a shuffled deck
+    // place deckID on Firebase
     var queryURL = "https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1"
 
 
@@ -62,5 +69,23 @@ function startGame() {
 
 
     });
+
+function playCard() {
+    //* boolean: ready for the next battle?
+    //* draw from the deck API
+    //* store card in firebase
+    //* when child_added to firebase, update card(s) on screen
+    //* when both cards are played:
+    //    * determine winner
+    //    * display winner
+    //    * score for winner += 2 points
+    //    * remove the two children on firebase (player 1)
+    //    * timer: 3 seconds
+    //    * both played cards disappear
+    //* test: game over?
+    //    * player has > 26 points
+    //    * if over, declare a winner
+    //    * players are removed from firebase/players
+    //    * players return to login screen
 
 }

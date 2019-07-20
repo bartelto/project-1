@@ -1,6 +1,11 @@
 /* Screen styling */
 
+.avatar {
+    width: 140px;
+    border-radius: 50%;
+}
 
+/*
 #opponent-card {
     top: 200px;
     left: 300px;
@@ -20,7 +25,7 @@
     top: 510px;
     left: 292px;
 }
-
+*/
 #player-wild-1 {
     top: 350px;
     left: 450px;
@@ -32,35 +37,35 @@
 }
 
 /* Playing card styling */
-.card, 
+.playing-card, 
 .deck {
     display: inline-block;
-    position: absolute;
+    position: relative;
     width: 100px;
     height: 140px;
     border: solid black 1px;
     border-radius: 10px;
-    margin: 10px;
+    margin: 5px;
     display: flex;
     justify-content: center; /* align horizontal */
     align-items: center; /* align vertical */
 }   
 
-.card {
+.playing-card {
     text-align: center;
     vertical-align: middle;
     box-shadow: 2px 2px 2px #888888;
     font-size: 50px;
 }
 
-.card::before {
+.playing-card::before {
     font-size: 30pt;    
     position: absolute;
     left: 0;
     top: -10px;
 }
 
-.card::after {
+.playing-card::after {
     font-size: 30pt;
     position: absolute;
     right: 0;

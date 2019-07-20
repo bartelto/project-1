@@ -10,6 +10,7 @@ var firebaseConfig = {
 };
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
+var database = firebase.database();
 
 setCardValue("#player-card", "0H");
 setCardValue("#opponent-card", "AD");
@@ -40,21 +41,26 @@ $("#player-deck").on("click", function () {
     let randomCard = randomCards[Math.floor(Math.random() * randomCards.length)];
     setCardValue("#player-card", randomCard);
 });
-
+startGame();
 // Game Logic
 function startGame() {
     var queryURL = "https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1"
-    console.log(this);
+
+
+    $.ajax({
+        url: queryURL,
+        method: "GET"
+    }).then(function (response) {
+        // var newDeck = response.data
+        console.log(response.deck_id)
+
+    });
 
     $("#player-deck").on("click", function () {
         // when player deck is clicked
         "https://deckofcardsapi.com/api/deck/<<deck_id>>/pile/<<pile_name>>/draw/?count=2"
 
-        $.ajax({
-            url: queryURL,
-            method: "GET"
-        }).then(function (response) {
 
-        });
     });
+
 }

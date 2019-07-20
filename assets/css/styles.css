@@ -5,6 +5,11 @@
     border-radius: 50%;
 }
 
+.mini {
+    width: 30px;
+    margin-right: 10px;
+}
+
 /*
 #opponent-card {
     top: 200px;

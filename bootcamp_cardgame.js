@@ -3,7 +3,9 @@
   Tyler Roland
   Modified 11/21/17
   War functionality
-https://github.com/MisterTeeRoland/war/blob/master/game.js
+  https://github.com/MisterTeeRoland/war/blob/master/game.js
+  http://www.tyler-roland.com/War/
+  https://github.com/bartelto/project-1
 */
 
 //initialize variables
@@ -24,8 +26,8 @@ function fillArray() {
 
 //function to shuffle deck of cards. 
 function shuffle(deck) {
-    for(var j, x, i = deck.length; i; j = Math.floor(Math.random() * i), x = deck[--i], deck[i] = deck[j], deck[j] = x);
-    return deck;
+  for (var j, x, i = deck.length; i; j = Math.floor(Math.random() * i), x = deck[--i], deck[i] = deck[j], deck[j] = x);
+  return deck;
 }
 
 //function to split shuffled deck in half
@@ -35,8 +37,8 @@ function splitCards(deck) {
   //push a card to each "hand" array
   while (i != deck.length) {
     player1Array.push(deck[i]);
-    player2Array.push(deck[(i+1)]);
-    i+=2;
+    player2Array.push(deck[(i + 1)]);
+    i += 2;
   }
 
   $('.player1Count').html("Player1 cards: " + player1Array.length);
@@ -46,7 +48,7 @@ function splitCards(deck) {
 
 //function to take top card off of each deck and put into card slot
 function deal() {
-  
+
   //if a card is already in the slot, removes card. Also shows "New Game" button if hidden
   $('.player1Card').html("");
   $('.player2Card').html("");
@@ -74,13 +76,13 @@ function deal() {
 
 //function to compare both face up cards (or current cards)
 function compare(player1, player2) {
-  
+
   //if player1's card value is higher than the player2's card value, player1 wins
-  if((player1 % 13) > (player2 % 13)) {
-  
+  if ((player1 % 13) > (player2 % 13)) {
+
     //updates result div of the game board
     $('.result').html("Player1 wins!").animateCss("flipInX");
-    
+
     //pushes current cards from each hand to the back of the player1's hand
     player1Array.push(player2);
     player1Array.push(player1);
@@ -89,7 +91,7 @@ function compare(player1, player2) {
     player1Array.shift();
     player2Array.shift();
 
-    setTimeout(function() {
+    setTimeout(function () {
       moveCards('player1');
     }, 1500);
 
@@ -100,10 +102,10 @@ function compare(player1, player2) {
 
   //if player2's card value is higher than the player1's card value, player2 wins
   else if ((player1 % 13) < (player2 % 13)) {
-    
+
     //update the results div of the game table
     $('.result').html("Computer wins!").animateCss("flipInX");
-    
+
     //pushes current cards from each hand to the back of the player2's hand
     player2Array.push(player1);
     player2Array.push(player2);
@@ -112,7 +114,7 @@ function compare(player1, player2) {
     player2Array.shift();
     player1Array.shift();
 
-    setTimeout(function() {
+    setTimeout(function () {
       moveCards('player2');
     }, 1500);
 
@@ -131,45 +133,45 @@ function moveCards(winner) {
 
   if (winner == "player1") {
     console.log("moving left");
-    $(".player1Card img").css('position', 'relative').animate({ left: '-2000px' }, function() { $(this).hide(); });
-    $(".player2Card img").css('position', 'relative').animate({ left: '-2000px' }, function() { $(this).hide(); });
+    $(".player1Card img").css('position', 'relative').animate({ left: '-2000px' }, function () { $(this).hide(); });
+    $(".player2Card img").css('position', 'relative').animate({ left: '-2000px' }, function () { $(this).hide(); });
   }
   else if (winner == "player2") {
     console.log("moving right");
-    $(".player1Card img").css('position', 'relative').animate({ left: '2000px' }, function() { $(this).hide(); });
-    $(".player2Card img").css('position', 'relative').animate({ left: '2000px' }, function() { $(this).hide(); });
+    $(".player1Card img").css('position', 'relative').animate({ left: '2000px' }, function () { $(this).hide(); });
+    $(".player2Card img").css('position', 'relative').animate({ left: '2000px' }, function () { $(this).hide(); });
   }
   else if (winner == "player1War") {
-    $("#warArea img").css("position", "relative").animate({ left: '-2000px' }, function() { $("#warArea img").hide(); });
+    $("#warArea img").css("position", "relative").animate({ left: '-2000px' }, function () { $("#warArea img").hide(); });
   }
   else if (winner == "player2War") {
-    $("#warArea img").css("position", "relative").animate({ left: '2000px' }, function() { $("#warArea img").hide(); });
+    $("#warArea img").css("position", "relative").animate({ left: '2000px' }, function () { $("#warArea img").hide(); });
   }
 }
 
 
 //function to handle "war" instances or "ties"
 function war() {
-  
+
   //show "war" animation
   $('#warAnimation').css("display", "table");
 
-  $("#warText").animateCss("lightSpeedIn", function() {
+  $("#warText").animateCss("lightSpeedIn", function () {
     $("#warText").animateCss("lightSpeedOut");
   });
 
   //keeps animation going for 1 second, then removes the 'war' class and hides the animation
-  setTimeout(function() {
+  setTimeout(function () {
     $('#warAnimation').hide();
     $("#warText").removeClass("lightSpeedOut");
 
     $("#warArea").show();
-    
+
     //calls function to draw cards from each deck
     warToArray();
   }, 2000);
 
-  
+
 }
 
 
@@ -183,7 +185,7 @@ function warToArray() {
   if (player1Array.length < 5 || player2Array.length < 5) {
 
     //if player2 has less than 4 cards
-    if(player1Array.length > player2Array.length) {
+    if (player1Array.length > player2Array.length) {
       length = player2Array.length - 1;
     }
 
@@ -195,7 +197,7 @@ function warToArray() {
 
   //if both decks have greater than four cards
   else {
-    length = 3;   
+    length = 3;
   }
 
   //take the cards from each deck and push them to the war array
@@ -208,10 +210,10 @@ function warToArray() {
   }
 
   //set up the War visual with relevant cards
-  $(".playerWarFinal").html("<img src='img/cards/"+player1Array[0]+".png'>").animateCss("flipInYRev");
+  $(".playerWarFinal").html("<img src='img/cards/" + player1Array[0] + ".png'>").animateCss("flipInYRev");
   $(".playerWarCards").html(cardStr);
   $(".compWarCards").html(cardStr);
-  $(".compWarFinal").html("<img src='img/cards/"+player2Array[0]+".png'>").animateCss("flipInY");
+  $(".compWarFinal").html("<img src='img/cards/" + player2Array[0] + ".png'>").animateCss("flipInY");
 
   //compare the new current card from each deck
   compareWar(player1Array[0], player2Array[0]);
@@ -220,33 +222,33 @@ function warToArray() {
 
 //function to compare current cards and allocate the war array correctly
 function compareWar(player1, player2) {
-  
+
   //if player1's War card value is greater than the player2's War card value, player1 wins the tie
-  if((player1 % 13) > (player2 % 13)) {
-  
+  if ((player1 % 13) > (player2 % 13)) {
+
     //updates result section of the game board
     $('.result').html("Player1 wins!");
-    
+
     //pushes entire war array to the back of the player1's hand
     player1Array.push.apply(player1Array, warArray);
 
     //pushes both current cards (War cards) to back of the player1's hand
     player1Array.push(player2);
     player1Array.push(player1);
-    
+
     //removes current card from both hands
     player1Array.shift();
     player2Array.shift();
-    
+
     //resets the war array to empty
     warArray.length = 0;
 
-    setTimeout(function() {
+    setTimeout(function () {
       moveCards("player1War");
       moveCards("player1");
     }, 3000);
 
-    setTimeout(function() {
+    setTimeout(function () {
       $("#warArea").hide();
     }, 3500);
 
@@ -257,13 +259,13 @@ function compareWar(player1, player2) {
 
   //if player2's War card value is greater than the player1's War card value, player2 wins the tie
   else if ((player1 % 13) < (player2 % 13)) {
-    
+
     //update result section of the game board
     $('.result').html("Computer wins!");
-    
+
     //pushes the entire war array to the back of the player2's hand
     player2Array.push.apply(player2Array, warArray);
-    
+
     //pushes both current cards (War cards) to the back of the player2's hand
     player2Array.push(player1);
     player2Array.push(player2);
@@ -275,12 +277,12 @@ function compareWar(player1, player2) {
     //resets the war array to empty
     warArray.length = 0;
 
-    setTimeout(function() {
+    setTimeout(function () {
       moveCards("player2War");
       moveCards("player2");
     }, 3000);
 
-    setTimeout(function() {
+    setTimeout(function () {
       $("#warArea").hide();
     }, 3500);
 
@@ -297,7 +299,7 @@ function compareWar(player1, player2) {
 
 //function to check if either player is out of cards (being a win for the other player)
 function checkWin() {
-  
+
   //if player1 is out of cards, player2 wins
   if (player1Array.length == 0) {
     $(".result").html("The player2 wins the game :(").animateCss("flipInX");
@@ -312,7 +314,7 @@ function checkWin() {
 
   //if player2 is out of cards, player1 wins
   else if (player2Array.length == 0) {
-    
+
     $(".result").html("You won the game! :)").animateCss("flipInX");
 
     //resets the card and deck image to make it seem like the player2 is out of cards.
@@ -347,7 +349,7 @@ function hideAll() {
   $(".newGame").hide();
 }
 
-window.onload = function() {
+window.onload = function () {
 
   preloadImages();
 
@@ -362,15 +364,15 @@ window.onload = function() {
 //custom function, used with animate.css to quickly add and then remove animation classes (once animation is finished)
 //found here: https://github.com/daneden/animate.css
 $.fn.extend({
-  animateCss: function(animationName, callback) {
+  animateCss: function (animationName, callback) {
     var animationEnd = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
-        this.addClass('animated ' + animationName).one(animationEnd, function() {
-            $(this).removeClass('animated ' + animationName);
-            if (callback) {
-              callback();
-            }
-        });
-        return this;
+    this.addClass('animated ' + animationName).one(animationEnd, function () {
+      $(this).removeClass('animated ' + animationName);
+      if (callback) {
+        callback();
+      }
+    });
+    return this;
   }
 });
 
@@ -378,6 +380,6 @@ $.fn.extend({
 function preloadImages() {
   for (var i = 0; i < 52; i++) {
     var img = new Image();
-    img.src = 'img/cards/'+i+'.png';
+    img.src = 'img/cards/' + i + '.png';
   }
 }

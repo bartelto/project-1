@@ -17,87 +17,127 @@
 </head>
 
 <body>
+        <!--
     <section id="login-screen">
     
     </section>
     <section id="game-screen">
-        <div id="opponent-deck" class="deck"></div>
-        <div id="opponent-card" class="card"></div>
-        <div id="player-card" class="card"></div>
-        <div id="player-deck" class="deck"></div>
-        <div id="player-wild-1" class="card back"></div>
-        <div id="player-wild-2" class="card"></div>
 
+        <div id="player-wild-1" class="playing-card back"></div>
+        <div id="player-wild-2" class="playing-card"></div>
+        
+    </section>
+-->
         <div class="content">
             <div class="jumbotron jumbotron-fluid">
                 <div class="container">
                     <h1 class="display-4">War</h1>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-sm-6">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">Player 1 Deck</h5>
-                            <p class="card-text">this will be where player 1 deck sits</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-6">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">Player 1 Winning Cards</h5>
-                            <p class="card-text">this will be where player 1 winning cards sit</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-4">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">Battle Area</h5>
-                            <div class="col-sm-4">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-8">
+                        <div class="row">
+                            <div class="col">
                                 <div class="card">
                                     <div class="card-body">
-                                        <h5 class="card-title">P1 Card</h5>
-
+                                        <!--<h5 class="card-title">Player 1 Deck</h5>
+                                        <p class="card-text">this will be where player 1 deck sits</p>-->
+                                        <div class="row">
+                                            <div class="col-4">
+                                                <img src="https://api.adorable.io/avatars/400/opponent.png" class="avatar">
+                                            </div>
+                                            <div class="col-8">
+                                                <div id="opponent-deck" class="deck"></div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-sm-4">
+                            <!--<div class="col-sm-6">
                                 <div class="card">
                                     <div class="card-body">
-                                        <h5 class="card-title">P2 Card</h5>
+                                        <h5 class="card-title">Player 1 Winning Cards</h5>
+                                        <p class="card-text">this will be where player 1 winning cards sit</p>
+                                    </div>
+                                </div>
+                            </div>-->
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Battle Area</h5>
+                                        <div id="opponent-card" class="playing-card"></div>
+                                        <div id="player-card" class="playing-card"></div>
+                                       
+                                        <!--<div class="col-sm-6">-->
+                                            <!--<div class="card">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">P1 Card</h5>
 
+                                                </div>
+                                            </div>-->
+                                        <!--</div>-->
+                                        <!--<div class="col-sm-6">-->
+                                            <!--<div class="card">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">P2 Card</h5>
+
+                                                </div>
+                                            </div> -->
+                                        <!--</div>-->
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-6">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">Player 2 Deck</h5>
-                            <p class="card-text">this will be where player 2 deck sits</p>
+                        <div class="row">
+                            <div class="col">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-4">
+                                                <img src="https://api.adorable.io/avatars/400/player.png" class="avatar">
+                                            </div>
+                                            <div class="col-8">
+                                                <div id="player-deck" class="deck"></div>
+                                            </div>
+                                        </div>
+                                         <!--<h5 class="card-title">Player 2 Deck</h5>
+                                        <p class="card-text">this will be where player 2 deck sits</p>-->
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                            <!--<div class="col-sm-6">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Player 2 Winning Cards</h5>
+                                        <p class="card-text">this will be where player 2 winning cards sit.</p>
+                                    </div>
+                                </div>
+                            </div>-->
                         </div>
                     </div>
-                </div>
-                <div class="col-sm-6">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">Player 2 Winning Cards</h5>
-                            <p class="card-text">this will be where player 2 winning cards sit.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                    <div class="col-sm-4">
+                            <h5 class="card-title">Battle Chat</h5>
+                            <div class="input-group mb-3">
+                                <ul class="list-group">
+                                    <li class="list-group-item"><img src="https://api.adorable.io/avatars/400/player.png" class="avatar mini">You're going down.</li>
+                                    <li class="list-group-item"><img src="https://api.adorable.io/avatars/400/opponent.png" class="avatar mini">Come at me.</li>
+                                </ul>
+                            </div>  
 
+                            <input type="text" class="form-control" placeholder="Enter message here" aria-label="Recipient's username" aria-describedby="basic-addon2">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" type="button">Send</button>
+                            </div>
+                        
+                    </div>
+                </div>
+            </div>
         </div>
-    </section>
+    
     <script src="assets/javascript/game.js"></script>
 </body>
 

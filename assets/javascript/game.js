@@ -44,6 +44,45 @@ $("#player-deck").on("click", function () {
 
 startGame();
 
+// Login Logic
+let playerName = "";
+let playerKey = "";
+let opponentName = "";
+let opponentKey = "";
+let playerCount = 0;
+
+
+$("#input-screen-name").on("change keyup paste", function() {
+    console.log("here");
+    $("#login-avatar").attr("src", `https://api.adorable.io/avatars/400/${$(this).val()}.png`);
+});
+
+$("#submit-screen-name").click( function(event) {   
+    event.preventDefault();
+
+    playerName = $("#input-screen-name").val();
+    playerRef = database.ref("/players").push({ 
+        name: playerName 
+    });
+    playerKey = playerRef.key;
+    // Remove user from the players list when they disconnect.
+    playerRef.onDisconnect().remove();
+})
+
+database.ref("/players").on("value", function(snapshot) {  
+    console.log("num players changed");
+    playerCount = snapshot.numChildren();
+    if (playerCount > 1) {
+        $("#label-screen-name").text("Sorry, but there are alrady two players in the game. Please try again later.");
+        $("#input-screen-name").prop('disabled', true);
+        $("#submit-screen-name").prop('disabled', true);
+    } else {
+        $("#label-screen-name").text("Your screen name:");
+        $("#input-screen-name").prop('disabled', false);
+        $("#submit-screen-name").prop('disabled', false);
+    }
+});
+
 // Game Logic
 function startGame() {
    // show game area & chat box
@@ -65,10 +104,11 @@ function startGame() {
 
     $("#player-deck").on("click", function () {
         // when player deck is clicked
-        "https://deckofcardsapi.com/api/deck/<<deck_id>>/pile/<<pile_name>>/draw/?count=2"
+        //"https://deckofcardsapi.com/api/deck/<<deck_id>>/pile/<<pile_name>>/draw/?count=2"
 
 
     });
+}
 
 function playCard() {
     //* boolean: ready for the next battle?

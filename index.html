@@ -52,7 +52,7 @@
                     </div>
                 </div>
             </div>
-            <div class="container">
+            <div id="game-screen" class="container">
                 <div class="row">
                     <div class="col-sm-8">
                         <div class="row">
@@ -63,7 +63,8 @@
                                         <p class="card-text">this will be where player 1 deck sits</p>-->
                                         <div class="row">
                                             <div class="col-4">
-                                                <img src="https://api.adorable.io/avatars/400/opponent.png" class="avatar">
+                                                <p id="opponent-name">Opponent</p>
+                                                <img src="https://api.adorable.io/avatars/400/opponent.png" class="avatar opponent-avatar">
                                             </div>
                                             <div class="col-8">
                                                 <div id="opponent-deck" class="deck"></div>
@@ -115,7 +116,8 @@
                                     <div class="card-body">
                                         <div class="row">
                                             <div class="col-4">
-                                                <img src="https://api.adorable.io/avatars/400/player.png" class="avatar">
+                                                <p id="player-name">Player</p>
+                                                <img src="https://api.adorable.io/avatars/400/player.png" class="avatar player-avatar">
                                             </div>
                                             <div class="col-8">
                                                 <div id="player-deck" class="deck"></div>

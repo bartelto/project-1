@@ -1,3 +1,5 @@
+$("#game-screen").hide();
+
 //Firebase
 var firebaseConfig = {
     apiKey: "AIzaSyDFbSU7PZJHTzMVbA0JE3bet5RWadB2ajc",
@@ -42,14 +44,16 @@ $("#player-deck").on("click", function () {
     setCardValue("#player-card", randomCard);
 });
 
-startGame();
+//startGame();
 
 // Login Logic
 let playerName = "";
 let playerKey = "";
+let playerRef = [];
 let opponentName = "";
 let opponentKey = "";
 let playerCount = 0;
+let addingPlayerToDatabase = false;
 
 
 $("#input-screen-name").on("change keyup paste", function() {
@@ -61,19 +65,26 @@ $("#submit-screen-name").click( function(event) {
     event.preventDefault();
 
     playerName = $("#input-screen-name").val();
+    addingPlayerToDatabase = true;
     playerRef = database.ref("/players").push({ 
         name: playerName 
     });
     playerKey = playerRef.key;
+    addingPlayerToDatabase = false;
+    
     // Remove user from the players list when they disconnect.
     playerRef.onDisconnect().remove();
+
+    if (playerKey !== "" && opponentKey !== "") {
+        startGame()
+    }
 })
 
 database.ref("/players").on("value", function(snapshot) {  
-    console.log("num players changed");
+    //console.log("num players changed");
     playerCount = snapshot.numChildren();
     if (playerCount > 1) {
-        $("#label-screen-name").text("Sorry, but there are alrady two players in the game. Please try again later.");
+        $("#label-screen-name").text("Sorry, but there are already two players in the game. Please try again later.");
         $("#input-screen-name").prop('disabled', true);
         $("#submit-screen-name").prop('disabled', true);
     } else {
@@ -83,11 +94,31 @@ database.ref("/players").on("value", function(snapshot) {
     }
 });
 
+database.ref("/players").on("child_added", function(snapshot) {
+    //console.log("child added");
+    if ((snapshot.key !== playerKey) && !addingPlayerToDatabase) {
+        opponentKey = snapshot.key;
+        opponentName = snapshot.val().name;
+    }
+    if (playerKey !== "" && opponentKey !== "") {
+        startGame()
+    }
+});
+
 // Game Logic
 function startGame() {
-   // show game area & chat box
+    // show game area & chat box
+    $("#login-screen").hide();
+    $("#game-screen").show();
+
     // display player names
+    $("#player-name").text(playerName);
+    $("#opponent-name").text(opponentName);
+
     // display avatars
+    $(".player-avatar").attr("src", `https://api.adorable.io/avatars/400/${playerName}.png`);
+    $(".opponent-avatar").attr("src", `https://api.adorable.io/avatars/400/${opponentName}.png`);
+
     // create a shuffled deck
     // place deckID on Firebase
     var queryURL = "https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1"

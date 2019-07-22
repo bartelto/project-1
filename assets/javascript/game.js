@@ -57,7 +57,6 @@ let addingPlayerToDatabase = false;
 
 
 $("#input-screen-name").on("change keyup paste", function() {
-    console.log("here");
     $("#login-avatar").attr("src", `https://api.adorable.io/avatars/400/${$(this).val()}.png`);
 });
 
@@ -110,6 +109,7 @@ function startGame() {
     // show game area & chat box
     $("#login-screen").hide();
     $("#game-screen").show();
+    $("#chat-list").empty();
 
     // display player names
     $("#player-name").text(playerName);
@@ -160,3 +160,41 @@ function playCard() {
     //    * players return to login screen
 
 }
+
+// Chat Logic
+let messagesRef = undefined;
+let messagesKey = "";
+
+$("#chat-send").click(function() {
+    event.preventDefault();
+
+    let message = $("#input-message").val();
+
+    database.ref("/messages").push({ 
+        to: opponentKey,
+        message: message
+    });
+    $("#input-message").val("");
+});
+
+database.ref("/messages").on("child_added", function(snapshot) {
+    
+    let newChat = snapshot.val();
+    if (newChat.to === playerKey || newChat.to === opponentKey) {
+        let newMessage = $("<li>")
+            .text(newChat.message)
+            .addClass("list-group-item");
+        if (newChat.to === opponentKey) {
+            newMessage
+                .addClass("player-message")
+                .append(`<img src="https://api.adorable.io/avatars/400/${playerName}.png">`);
+        } else {
+            newMessage
+                .addClass("opponent-message")    
+                .prepend(`<img src="https://api.adorable.io/avatars/400/${opponentName}.png">`);
+        }
+        $("#chat-list").append(newMessage);
+    }
+
+});
+

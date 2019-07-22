@@ -5,8 +5,27 @@
     border-radius: 50%;
 }
 
-.mini {
+#chat-list {
+    width: 100%;
+}
+
+.player-message {
+    text-align: right;
+}
+
+.opponent-message{
+    text-align: left
+}
+
+.player-message img {
     width: 30px;
+    border-radius: 50%;
+    margin-left: 10px;
+}
+
+.opponent-message img {
+    width: 30px;
+    border-radius: 50%; 
     margin-right: 10px;
 }
 

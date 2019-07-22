@@ -194,7 +194,11 @@ database.ref("/messages").on("child_added", function(snapshot) {
                 .prepend(`<img src="https://api.adorable.io/avatars/400/${opponentName}.png">`);
         }
         $("#chat-list").append(newMessage);
-    }
+
+        // delete message from database
+        database.ref("/messages").child(snapshot.key).remove();
+        
+    }   
 
 });
 

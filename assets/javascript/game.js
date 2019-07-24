@@ -4,6 +4,8 @@ var drawnCard = "";
 var cardValue = "";
 
 //$("#game-screen").hide();
+ 	
+responsiveVoice.speak("This is War!");
 
 //Firebase
 var firebaseConfig = {

@@ -311,7 +311,7 @@ database.ref("/messages").on("child_added", function (snapshot) {
                 .addClass("opponent-message")
                 .prepend(`<img src="https://api.adorable.io/avatars/400/${opponentName}.png">`);
             try {
-                responsiveVoice.speak(newMessage);
+                responsiveVoice.speak(newChat.message);
             }
             catch(err) {
                 console.log("voice error: " + err.message);

@@ -1,3 +1,8 @@
+//Global Variables---------------------------------------------------
+var deckId = "";
+var drawnCard = "";
+var cardValue = "";
+
 //Firebase
 var firebaseConfig = {
     apiKey: "AIzaSyDFbSU7PZJHTzMVbA0JE3bet5RWadB2ajc",
@@ -12,7 +17,7 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 var database = firebase.database();
 
-setCardValue("#player-card", "0H");
+setCardValue("#player-card", cardValue);
 setCardValue("#opponent-card", "AD");
 //setCardValue("#player-wild-1", "8C");
 //setCardValue("#player-wild-2", "JS");
@@ -35,22 +40,23 @@ function setCardValue(cardId, cardCode) {
     }
 }
 
-$("#player-deck").on("click", function () {
-    // play the next card (demo only)
-    let randomCards = ["8S", "9H", "AC", "KD", "3S", "7H", "AC"];
-    let randomCard = randomCards[Math.floor(Math.random() * randomCards.length)];
-    setCardValue("#player-card", randomCard);
-});
+//$("#player-deck").on("click", function () {
+//play the next card (demo only)
+//let randomCards = ["8S", "9H", "AC", "KD", "3S", "7H", "AC"];
+//let randomCard = randomCards[Math.floor(Math.random() * randomCards.length)];
+//setCardValue("#player-card", randomCard);
+//});
 
 startGame();
 
 // Game Logic
 function startGame() {
-   // show game area & chat box
+    // show game area & chat box
     // display player names
     // display avatars
     // create a shuffled deck
     // place deckID on Firebase
+
     var queryURL = "https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1"
 
 
@@ -58,34 +64,54 @@ function startGame() {
         url: queryURL,
         method: "GET"
     }).then(function (response) {
-        // var newDeck = response.data
-        console.log(response.deck_id)
+        //set variable equal to id of deck
+        deckId = response.deck_id;
+        //Sanity Checks
+        console.log(deckId);
+
 
     });
-
+    //when player deck is clicked
     $("#player-deck").on("click", function () {
-        // when player deck is clicked
-        "https://deckofcardsapi.com/api/deck/<<deck_id>>/pile/<<pile_name>>/draw/?count=2"
+        // initialize the play game function
+        playCard();
 
 
     });
 
-function playCard() {
-    //* boolean: ready for the next battle?
-    //* draw from the deck API
-    //* store card in firebase
-    //* when child_added to firebase, update card(s) on screen
-    //* when both cards are played:
-    //    * determine winner
-    //    * display winner
-    //    * score for winner += 2 points
-    //    * remove the two children on firebase (player 1)
-    //    * timer: 3 seconds
-    //    * both played cards disappear
-    //* test: game over?
-    //    * player has > 26 points
-    //    * if over, declare a winner
-    //    * players are removed from firebase/players
-    //    * players return to login screen
+    function playCard() {
+        //* boolean: ready for the next battle?
+        var readyToPlay = true;
+        // draw from deck API
+        var drawnCardUrl = "https://deckofcardsapi.com/api/deck/" + deckId + "/draw/?count=1"
+        $.ajax({
+            url: drawnCardUrl,
+            method: "GET"
+        }).then(function (response) {
+            //set variable equal to id of deck
+            var cardValue = response.cards[0].code;
+            //Sanity Checks
+            console.log(cardValue);
+            setCardValue("#player-card", cardValue);
 
+        });
+        //convert cards to usable values
+
+
+        //* store card in firebase
+        //* when child_added to firebase, update card(s) on screen
+        //* when both cards are played:
+        //    * determine winner
+        //    * display winner
+        //    * score for winner += 2 points
+        //    * remove the two children on firebase (player 1)
+        //    * timer: 3 seconds
+        //    * both played cards disappear
+        //* test: game over?
+        //    * player has > 26 points
+        //    * if over, declare a winner
+        //    * players are removed from firebase/players
+        //    * players return to login screen
+
+    }
 }

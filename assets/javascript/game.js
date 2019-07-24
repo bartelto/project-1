@@ -11,11 +11,15 @@ var cardTwoWorth = "";
 var p1Wins = 0;
 var p2Wins = 0;
 var inWar = false;
+
 $("#game-screen").hide();
 
- 	
-responsiveVoice.speak("This is War!");
-
+try {
+    responsiveVoice.speak("This is War!");
+}
+catch(err) {
+    console.log("voice error: " + err.message);
+}
 
 //Firebase
 var firebaseConfig = {
@@ -240,77 +244,84 @@ function winCon() {
         alert("Please, Wait for your opponent")
     }
 
-    function initiateWar() {
-        inWar === true;
-        var warDrawUrl = "https://deckofcardsapi.com/api/deck/" + deckId + "/draw/?count=3"
-        $.ajax({
-            url: warDrawUrl,
-            method: "GET"
-        }).then(function (response) {
-            var warCard1 = response.cards[0].code;
-            var warCard2 = response.cards[1].code;
-            var warCard3 = response.cards[2].code;
+}
 
-            //Need to update html to have war cards update
+function initiateWar() {
+    inWar === true;
+    var warDrawUrl = "https://deckofcardsapi.com/api/deck/" + deckId + "/draw/?count=3"
+    $.ajax({
+        url: warDrawUrl,
+        method: "GET"
+    }).then(function (response) {
+        var warCard1 = response.cards[0].code;
+        var warCard2 = response.cards[1].code;
+        var warCard3 = response.cards[2].code;
 
-            //Sanity Checks
-            console.log(warDrawUrl);
+        //Need to update html to have war cards update
 
-
-        });
-    }
-
-    function playWarCard() {
-        var drawnCardUrl = "https://deckofcardsapi.com/api/deck/" + deckId + "/draw/?count=1"
-        $.ajax({
-            url: drawnCardUrl,
-            method: "GET"
-        }).then(function (response) {
-            //set variable equal to card code and value
-            var cardWorth = response.cards[0].value;
-            winCon();
-        })
-    }
+        //Sanity Checks
+        console.log(warDrawUrl);
 
 
-    // Chat Logic=======================================================================================================
-    let messagesRef = undefined;
-    let messagesKey = "";
-
-    $("#chat-send").click(function () {
-        event.preventDefault();
-
-        let message = $("#input-message").val();
-
-        database.ref("/messages").push({
-            to: opponentKey,
-            message: message
-        });
-        $("#input-message").val("");
     });
+}
 
-    database.ref("/messages").on("child_added", function (snapshot) {
+function playWarCard() {
+    var drawnCardUrl = "https://deckofcardsapi.com/api/deck/" + deckId + "/draw/?count=1"
+    $.ajax({
+        url: drawnCardUrl,
+        method: "GET"
+    }).then(function (response) {
+        //set variable equal to card code and value
+        var cardWorth = response.cards[0].value;
+        winCon();
+    })
+}
 
-        let newChat = snapshot.val();
-        if (newChat.to === playerKey || newChat.to === opponentKey) {
-            let newMessage = $("<li>")
-                .text(newChat.message)
-                .addClass("list-group-item");
-            if (newChat.to === opponentKey) { // message is from the player
-                newMessage
-                    .addClass("player-message")
-                    .append(`<img src="https://api.adorable.io/avatars/400/${playerName}.png">`);
-            } else { // message is from the opponent
-                newMessage
-                    .addClass("opponent-message")
-                    .prepend(`<img src="https://api.adorable.io/avatars/400/${opponentName}.png">`);
+
+// Chat Logic=======================================================================================================
+let messagesRef = undefined;
+let messagesKey = "";
+
+$("#chat-send").click(function () {
+    event.preventDefault();
+
+    let message = $("#input-message").val();
+
+    database.ref("/messages").push({
+        to: opponentKey,
+        message: message
+    });
+    $("#input-message").val("");
+});
+
+database.ref("/messages").on("child_added", function (snapshot) {
+
+    let newChat = snapshot.val();
+    if (newChat.to === playerKey || newChat.to === opponentKey) {
+        let newMessage = $("<li>")
+            .text(newChat.message)
+            .addClass("list-group-item");
+        if (newChat.to === opponentKey) { // message is from the player
+            newMessage
+                .addClass("player-message")
+                .append(`<img src="https://api.adorable.io/avatars/400/${playerName}.png">`);
+        } else { // message is from the opponent
+            newMessage
+                .addClass("opponent-message")
+                .prepend(`<img src="https://api.adorable.io/avatars/400/${opponentName}.png">`);
+            try {
                 responsiveVoice.speak(newMessage);
             }
-            $("#chat-list").append(newMessage);
-
-            // delete message from database
-            database.ref("/messages").child(snapshot.key).remove();
-
+            catch(err) {
+                console.log("voice error: " + err.message);
+            }
         }
+        $("#chat-list").append(newMessage);
 
-    });
+        // delete message from database
+        database.ref("/messages").child(snapshot.key).remove();
+
+    }
+
+});

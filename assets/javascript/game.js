@@ -296,14 +296,15 @@ function winCon() {
             let newMessage = $("<li>")
                 .text(newChat.message)
                 .addClass("list-group-item");
-            if (newChat.to === opponentKey) {
+            if (newChat.to === opponentKey) { // message is from the player
                 newMessage
                     .addClass("player-message")
                     .append(`<img src="https://api.adorable.io/avatars/400/${playerName}.png">`);
-            } else {
+            } else { // message is from the opponent
                 newMessage
                     .addClass("opponent-message")
                     .prepend(`<img src="https://api.adorable.io/avatars/400/${opponentName}.png">`);
+                responsiveVoice.speak(newMessage);
             }
             $("#chat-list").append(newMessage);
 

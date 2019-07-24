@@ -1,3 +1,14 @@
+body {
+    background-image: url("../../images/felt\ top.jpg");
+    background-repeat: no-repeat;
+    background-size: 100% 100vh;
+}
+
 .display-4 {
     text-decoration: underline;
+}
+
+.input-group {
+    width: 40%;
+    margin: 0 auto;
 }

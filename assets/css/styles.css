@@ -98,6 +98,11 @@
 
 }
 
+.playing-card.no-card {
+    border: dashed 5px lightcoral;
+    box-shadow: none;
+}
+
 .spade,
 .club {
     color: black;

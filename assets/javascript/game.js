@@ -3,7 +3,7 @@ var deckId = "";
 var drawnCard = "";
 var cardValue = "";
 
-$("#game-screen").hide();
+//$("#game-screen").hide();
 
 //Firebase
 var firebaseConfig = {
@@ -20,20 +20,26 @@ firebase.initializeApp(firebaseConfig);
 var database = firebase.database();
 
 setCardValue("#player-card", cardValue);
-setCardValue("#opponent-card", "AD");
+setCardValue("#opponent-card", "");
 //setCardValue("#player-wild-1", "8C");
 //setCardValue("#player-wild-2", "JS");
 
 function setCardValue(cardId, cardCode) {
+    if (cardCode === "") {
+        $(cardId).removeClass("spade club heart diamond");
+        $(cardId).addClass("playing-card no-card");
+        return;
+    }
+
     // set rank
-    if (cardCode.substring(0, 1) === "0") {
+    if (cardCode.substring(0, 1) === "0") { 
         $(cardId).text("10");
     } else {
         $(cardId).text(cardCode.substring(0, 1));
     }
 
     // set suit
-    $(cardId).removeClass("spade club heart diamond");
+    $(cardId).removeClass("no-card spade club heart diamond");
     switch (cardCode.substring(1)) {
         case "S": { $(cardId).addClass("playing-card spade"); } break;
         case "C": { $(cardId).addClass("playing-card club"); } break;
@@ -186,9 +192,7 @@ function startGame() {
         //    * players return to login screen
 
     }
-}
 
-}
 
 // Chat Logic
 let messagesRef = undefined;

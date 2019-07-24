@@ -2,7 +2,14 @@
 var deckId = "";
 var drawnCard = "";
 var cardValue = "";
-
+//Firebase Variables=================================================
+var playerOnePlayed = false;
+var playerTwoPlayed = false;
+var cardOneWorth = "";
+var cardTwoWorth = "";
+var p1Wins = 0;
+var p2Wins = 0;
+var inWar = false;
 $("#game-screen").hide();
 
 //Firebase
@@ -51,7 +58,7 @@ function setCardValue(cardId, cardCode) {
 
 //startGame();
 
-// Login Logic
+// Login Logic==========================================================================
 let playerName = "";
 let playerKey = "";
 let playerRef = [];
@@ -61,21 +68,21 @@ let playerCount = 0;
 let addingPlayerToDatabase = false;
 
 
-$("#input-screen-name").on("change keyup paste", function() {
+$("#input-screen-name").on("change keyup paste", function () {
     $("#login-avatar").attr("src", `https://api.adorable.io/avatars/400/${$(this).val()}.png`);
 });
 
-$("#submit-screen-name").click( function(event) {   
+$("#submit-screen-name").click(function (event) {
     event.preventDefault();
 
     playerName = $("#input-screen-name").val();
     addingPlayerToDatabase = true;
-    playerRef = database.ref("/players").push({ 
-        name: playerName 
+    playerRef = database.ref("/players").push({
+        name: playerName
     });
     playerKey = playerRef.key;
     addingPlayerToDatabase = false;
-    
+
     // Remove user from the players list when they disconnect.
     playerRef.onDisconnect().remove();
 
@@ -84,7 +91,7 @@ $("#submit-screen-name").click( function(event) {
     }
 })
 
-database.ref("/players").on("value", function(snapshot) {  
+database.ref("/players").on("value", function (snapshot) {
     //console.log("num players changed");
     playerCount = snapshot.numChildren();
     if (playerCount > 1) {
@@ -98,7 +105,7 @@ database.ref("/players").on("value", function(snapshot) {
     }
 });
 
-database.ref("/players").on("child_added", function(snapshot) {
+database.ref("/players").on("child_added", function (snapshot) {
     //console.log("child added");
     if ((snapshot.key !== playerKey) && !addingPlayerToDatabase) {
         opponentKey = snapshot.key;
@@ -109,7 +116,7 @@ database.ref("/players").on("child_added", function(snapshot) {
     }
 });
 
-// Game Logic
+// Game Logic================================================================================
 function startGame() {
     // show game area & chat box
 
@@ -145,88 +152,153 @@ function startGame() {
     //when player deck is clicked
     $("#player-deck").on("click", function () {
 
-        // initialize the play game function
-        playCard();
-
+        if (inWar === false) {
+            // initialize the play game function
+            playCard();
+        }
+        else {
+            playWarCard();
+        }
     });
 }
 
-    function playCard() {
-        //* boolean: ready for the next battle?
-        var readyToPlay = true;
-        // draw from deck API
+function playCard() {
+    //* boolean: ready for the next battle?
+    var readyToPlay = true;
+    // draw from deck API
+    var drawnCardUrl = "https://deckofcardsapi.com/api/deck/" + deckId + "/draw/?count=1"
+    $.ajax({
+        url: drawnCardUrl,
+        method: "GET"
+    }).then(function (response) {
+        //set variable equal to card code and value
+        var cardCode = response.cards[0].code;
+        var cardWorth = response.cards[0].value;
+        //Sanity Checks
+        console.log(cardCode);
+        console.log(cardWorth)
+        if (cardWorth = King) {
+            cardWorth = 13;
+        }
+        if (cardWorth = Queen) {
+            cardWorth = 12;
+        }
+        if (cardWorth = Jack) {
+            cardWorth = 11;
+        }
+
+
+        winCon();
+        setCardValue("#player-card", cardCode);
+
+    });
+    //convert cards to usable values
+
+
+    //* store card in firebase
+    //* when child_added to firebase, update card(s) on screen
+    //* when both cards are played:
+    //    * determine winner
+    //    * display winner
+    //    * score for winner += 2 points
+    //    * remove the two children on firebase (player 1)
+    //    * timer: 3 seconds
+    //    * both played cards disappear
+    //* test: game over?
+    //    * player has > 26 points
+    //    * if over, declare a winner
+    //    * players are removed from firebase/players
+    //    * players return to login screen
+
+}
+
+function winCon() {
+    if (playerOnePlayed == true & playerTwoPlayed == true) {
+        if (cardOneWorth > cardTwoWorth) {
+            p1Wins++
+        }
+        else if (playerTwoPlayed > playerOnePlayed) {
+            p2Wins++
+        }
+        else {
+            alert("Commence War")
+            initiateWar();
+        }
+    }
+    else {
+        alert("Please, Wait for your opponent")
+    }
+
+    function initiateWar() {
+        inWar === true;
+        var warDrawUrl = "https://deckofcardsapi.com/api/deck/" + deckId + "/draw/?count=3"
+        $.ajax({
+            url: warDrawUrl,
+            method: "GET"
+        }).then(function (response) {
+            var warCard1 = response.cards[0].code;
+            var warCard2 = response.cards[1].code;
+            var warCard3 = response.cards[2].code;
+
+            //Need to update html to have war cards update
+
+            //Sanity Checks
+            console.log(warDrawUrl);
+
+
+        });
+    }
+
+    function playWarCard() {
         var drawnCardUrl = "https://deckofcardsapi.com/api/deck/" + deckId + "/draw/?count=1"
         $.ajax({
             url: drawnCardUrl,
             method: "GET"
         }).then(function (response) {
-            //set variable equal to id of deck
-            var cardValue = response.cards[0].code;
-            //Sanity Checks
-            console.log(cardValue);
-            setCardValue("#player-card", cardValue);
-
-        });
-        //convert cards to usable values
-
-
-        //* store card in firebase
-        //* when child_added to firebase, update card(s) on screen
-        //* when both cards are played:
-        //    * determine winner
-        //    * display winner
-        //    * score for winner += 2 points
-        //    * remove the two children on firebase (player 1)
-        //    * timer: 3 seconds
-        //    * both played cards disappear
-        //* test: game over?
-        //    * player has > 26 points
-        //    * if over, declare a winner
-        //    * players are removed from firebase/players
-        //    * players return to login screen
-
+            //set variable equal to card code and value
+            var cardWorth = response.cards[0].value;
+            winCon();
+        })
     }
-}
 
-}
 
-// Chat Logic
-let messagesRef = undefined;
-let messagesKey = "";
+    // Chat Logic=======================================================================================================
+    let messagesRef = undefined;
+    let messagesKey = "";
 
-$("#chat-send").click(function() {
-    event.preventDefault();
+    $("#chat-send").click(function () {
+        event.preventDefault();
 
-    let message = $("#input-message").val();
+        let message = $("#input-message").val();
 
-    database.ref("/messages").push({ 
-        to: opponentKey,
-        message: message
+        database.ref("/messages").push({
+            to: opponentKey,
+            message: message
+        });
+        $("#input-message").val("");
     });
-    $("#input-message").val("");
-});
 
-database.ref("/messages").on("child_added", function(snapshot) {
-    
-    let newChat = snapshot.val();
-    if (newChat.to === playerKey || newChat.to === opponentKey) {
-        let newMessage = $("<li>")
-            .text(newChat.message)
-            .addClass("list-group-item");
-        if (newChat.to === opponentKey) {
-            newMessage
-                .addClass("player-message")
-                .append(`<img src="https://api.adorable.io/avatars/400/${playerName}.png">`);
-        } else {
-            newMessage
-                .addClass("opponent-message")    
-                .prepend(`<img src="https://api.adorable.io/avatars/400/${opponentName}.png">`);
+    database.ref("/messages").on("child_added", function (snapshot) {
+
+        let newChat = snapshot.val();
+        if (newChat.to === playerKey || newChat.to === opponentKey) {
+            let newMessage = $("<li>")
+                .text(newChat.message)
+                .addClass("list-group-item");
+            if (newChat.to === opponentKey) {
+                newMessage
+                    .addClass("player-message")
+                    .append(`<img src="https://api.adorable.io/avatars/400/${playerName}.png">`);
+            } else {
+                newMessage
+                    .addClass("opponent-message")
+                    .prepend(`<img src="https://api.adorable.io/avatars/400/${opponentName}.png">`);
+            }
+            $("#chat-list").append(newMessage);
+
+            // delete message from database
+            database.ref("/messages").child(snapshot.key).remove();
+
         }
-        $("#chat-list").append(newMessage);
 
-        // delete message from database
-        database.ref("/messages").child(snapshot.key).remove();
-        
-    }   
-
-});
+    });

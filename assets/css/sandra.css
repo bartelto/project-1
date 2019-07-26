@@ -1,0 +1,29 @@
+.jumbotron {
+    color: inherit;
+    font-size:30px;
+    background-color: #427340;
+}
+
+body {
+    background-repeat: no-repeat;
+    background-size: 100% 100vh;
+    background-color: #90A681;
+}
+
+.display-4 {
+    text-decoration: underline;
+}
+
+.input-group {
+    width: 40%;
+    margin: 0 auto;
+}
+
+.card-body {
+    background-color: #82A67C;
+}
+
+.list-group-item:first-child {
+    border-top-left-radius: .25rem;
+    border-top-right-radius: .25rem;
+}

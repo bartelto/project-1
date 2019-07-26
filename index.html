@@ -181,7 +181,12 @@
         </div>
 
     </div>
-    <script src="https://code.responsivevoice.org/responsivevoice.js?key=5YN7d9Mj"></script>
+ 
+    <!--Workaround to bypass following error in in console
+        	Uncaught TypeError: url.indexOf is not a function
+            at jQuery.fn.init.jQuery.fn.load (jquery-3.4.1.js:10091)
+            at responsivevoice.js?key=5YN7d9Mj:339-->
+    <!--script src="https://code.responsivevoice.org/responsivevoice.js?key=5YN7d9Mj"></script-->
 
     <script src="assets/javascript/game.js"></script>
 </body>

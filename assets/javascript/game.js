@@ -17,7 +17,7 @@ $("#game-screen").hide();
 try {
     responsiveVoice.speak("This is War!");
 }
-catch(err) {
+catch (err) {
     console.log("voice error: " + err.message);
 }
 
@@ -48,7 +48,7 @@ function setCardValue(cardId, cardCode) {
     }
 
     // set rank
-    if (cardCode.substring(0, 1) === "0") { 
+    if (cardCode.substring(0, 1) === "0") {
         $(cardId).text("10");
     } else {
         $(cardId).text(cardCode.substring(0, 1));
@@ -82,6 +82,11 @@ let opponentKey = "";
 let playerCount = 0;
 let addingPlayerToDatabase = false;
 
+//++Siva
+let deckRef = [];
+let deckKey = "";
+let addingDeckToDatabase = false;
+//--Siva
 
 $("#input-screen-name").on("change keyup paste", function () {
     $("#login-avatar").attr("src", `https://api.adorable.io/avatars/400/${$(this).val()}.png`);
@@ -100,6 +105,12 @@ $("#submit-screen-name").click(function (event) {
 
     // Remove user from the players list when they disconnect.
     playerRef.onDisconnect().remove();
+
+    //++Siva
+    // Remove deck from the decks list when players disconnect
+    if (deckRef.length > 0)
+        deckRef.onDisconnect().remove();
+    //--Siva
 
     if (playerKey !== "" && opponentKey !== "") {
         startGame()
@@ -164,6 +175,19 @@ function startGame() {
 
 
     });
+
+    //++Siva
+    addingDeckToDatabase = true;
+    deckRef = database.ref("/decks").push({
+        deckId: deckId,
+        playerKey: playerKey,
+        opponentKey: opponentKey
+    });
+    deckKey = deckRef.key;
+    addingDeckToDatabase = false;
+    //-Siva
+
+
     //when player deck is clicked
     $("#player-deck").on("click", function () {
 
@@ -313,7 +337,7 @@ database.ref("/messages").on("child_added", function (snapshot) {
             try {
                 responsiveVoice.speak(newChat.message);
             }
-            catch(err) {
+            catch (err) {
                 console.log("voice error: " + err.message);
             }
         }

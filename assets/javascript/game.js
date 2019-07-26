@@ -1,3 +1,7 @@
+// First player to login is Player 1
+// Second player to login is Player 2
+// Player 1 initiates game communication with Player 2; Player 2 simply responds.
+
 //Global Variables---------------------------------------------------
 var deckId = "";
 var drawnCard = "";
@@ -6,18 +10,22 @@ var cardValue = "";
 //Firebase Variables=================================================
 var playerOnePlayed = false;
 var playerTwoPlayed = false;
-var cardOneWorth = "";
-var cardTwoWorth = "";
+var playerCardValue = 0;
+var opponentCardValue = 0;
+var playerCardCode = "";
+var opponentCardCode = "";
 var p1Wins = 0;
 var p2Wins = 0;
 var inWar = false;
+var isPlayer1 = false; // Player 1 is the first to log on, and will create the deck and share it with the other player
+var playRef = []; // reference to a play, as stored in the database.
 
 $("#game-screen").hide();
 
 try {
     responsiveVoice.speak("This is War!");
 }
-catch(err) {
+catch (err) {
     console.log("voice error: " + err.message);
 }
 
@@ -48,7 +56,7 @@ function setCardValue(cardId, cardCode) {
     }
 
     // set rank
-    if (cardCode.substring(0, 1) === "0") { 
+    if (cardCode.substring(0, 1) === "0") {
         $(cardId).text("10");
     } else {
         $(cardId).text(cardCode.substring(0, 1));
@@ -82,6 +90,11 @@ let opponentKey = "";
 let playerCount = 0;
 let addingPlayerToDatabase = false;
 
+//++Siva
+let deckRef = [];
+let deckKey = "";
+let addingDeckToDatabase = false;
+//--Siva
 
 $("#input-screen-name").on("change keyup paste", function () {
     $("#login-avatar").attr("src", `https://api.adorable.io/avatars/400/${$(this).val()}.png`);
@@ -92,6 +105,7 @@ $("#submit-screen-name").click(function (event) {
 
     playerName = $("#input-screen-name").val();
     addingPlayerToDatabase = true;
+
     playerRef = database.ref("/players").push({
         name: playerName
     });
@@ -101,8 +115,15 @@ $("#submit-screen-name").click(function (event) {
     // Remove user from the players list when they disconnect.
     playerRef.onDisconnect().remove();
 
+    if (playerCount === 1) {
+        console.log("I am Player 1");
+        isPlayer1 = true;
+    } else if (playerCount === 2) {
+        console.log("I am Player 2");
+    } 
+
     if (playerKey !== "" && opponentKey !== "") {
-        startGame()
+        startGame();
     }
 })
 
@@ -127,14 +148,18 @@ database.ref("/players").on("child_added", function (snapshot) {
         opponentName = snapshot.val().name;
     }
     if (playerKey !== "" && opponentKey !== "") {
-        startGame()
+        startGame();
     }
 });
 
-// Game Logic================================================================================
+////////////////
+// Game Logic //
+////////////////
+
 function startGame() {
     // show game area & chat box
 
+    $("#instructions").hide();
     $("#login-screen").hide();
     $("#game-screen").show();
     $("#chat-list").empty();
@@ -153,17 +178,34 @@ function startGame() {
     var queryURL = "https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1"
 
 
-    $.ajax({
-        url: queryURL,
-        method: "GET"
-    }).then(function (response) {
-        //set variable equal to id of deck
-        deckId = response.deck_id;
-        //Sanity Checks
-        console.log(deckId);
+    if (isPlayer1) { // Player 1 "deals" the deck
+        $.ajax({
+            url: queryURL,
+            method: "GET"
+        }).then(function (response) {
+            //set variable equal to id of deck
+            deckId = response.deck_id;
+            //Sanity Checks
+            console.log("deckID: " + deckId);
 
+            //++Siva
+            //addingDeckToDatabase = true;
+            deckRef = database.ref("/decks").push({
+                deckId: deckId,
+                to: opponentKey // so the opponent knows the deck is for them
+            });
+            //deckKey = deckRef.key;
+            //addingDeckToDatabase = false;
+            //-Siva
 
-    });
+            //++Siva
+            // Remove deck from the decks list when players disconnect
+            //if (deckRef.length > 0)
+            deckRef.onDisconnect().remove();
+            //--Siva
+        });
+    }
+
     //when player deck is clicked
     $("#player-deck").on("click", function () {
 
@@ -175,40 +217,67 @@ function startGame() {
             playWarCard();
         }
     });
+
+
 }
+
+database.ref("/decks").on("child_added", function (snapshot) {
+    let newDeck = snapshot.val();
+    if (newDeck.to === playerKey) {
+        deckId = newDeck.deckId;
+        console.log("deckID: " + deckId);
+    }
+});
+
 
 function playCard() {
     //* boolean: ready for the next battle?
     var readyToPlay = true;
     // draw from deck API
     var drawnCardUrl = "https://deckofcardsapi.com/api/deck/" + deckId + "/draw/?count=1"
+
     $.ajax({
         url: drawnCardUrl,
         method: "GET"
     }).then(function (response) {
         //set variable equal to card code and value
-        var cardCode = response.cards[0].code;
-        var cardWorth = response.cards[0].value;
+        playerCardCode = response.cards[0].code;
+        playerCardValue = calcCardValue(response.cards[0].value);
+
         //Sanity Checks
-        console.log(cardCode);
-        console.log(cardWorth)
-        if (cardWorth = King) {
-            cardWorth = 13;
-        }
-        if (cardWorth = Queen) {
-            cardWorth = 12;
-        }
-        if (cardWorth = Jack) {
-            cardWorth = 11;
-        }
+        console.log(playerCardCode);
+        console.log(playerCardValue);
 
+        setCardValue("#player-card", playerCardCode); // display card on screen
 
-        winCon();
-        setCardValue("#player-card", cardCode);
+        if (isPlayer1) { // P1 sends their cardCode to P2
+            playRef = database.ref("/plays").push({
+                cardCode1: playerCardCode,
+                to: opponentKey // so the opponent knows the deck is for them
+            });
+            playRef.onDisconnect().remove();
 
+            // P1 listens to Firebase for P2's card
+            playRef.child("cardCode2").on("value", function(snapshot) {
+                if (snapshot.val() !== null && snapshot.val() !== "") {
+                    opponentCardCode = snapshot.val();
+                    console.log("p2 played " + opponentCardCode);
+                    // display opponent's card on screen
+                    setCardValue("#opponent-card", opponentCardCode);
+                    // both sides have played; determine winner of the hand
+                    winCon();
+                }
+            });
+        } else if (!isPlayer1 && opponentCardCode !== "") { // P1 has already played
+            // send P2 card to P1
+            console.log(`sending ${playerCardCode} to Player 1`);
+            playRef.child("cardCode2").set(playerCardCode);
+            // both sides have played; determine winner of the hand
+            winCon();
+        }
+        
     });
-    //convert cards to usable values
-
+    
 
     //* store card in firebase
     //* when child_added to firebase, update card(s) on screen
@@ -227,22 +296,58 @@ function playCard() {
 
 }
 
+// Player 2 listens to Firebase for Player 1's card
+database.ref("/plays").on("child_added", function (snapshot) {
+    let newPlay = snapshot.val();
+    if (newPlay.to === playerKey) {
+        playRef = snapshot.ref;
+        opponentCardCode = newPlay.cardCode1;
+        console.log("opponentCardCode: " + opponentCardCode);
+        opponentCardValue = calcCardValue(opponentCardCode);
+        setCardValue("#opponent-card", opponentCardCode); // display card on screen
+
+        if (playerCardValue > 0) { 
+            playRef.child("cardCode2").set(playerCardCode);
+
+            // both players have played, so determine winner
+            winCon();
+        }
+    }
+
+});
+
+
+
+function calcCardValue(code) {
+    let val = code.substring(0,1);
+    if ($.isNumeric(val)) {
+        return parseInt(val);
+    } else {
+        switch (val) {
+            case "A": return 1;
+            case "J": return 11;
+            case "Q": return 12;
+            case "K": return 13;
+        }
+    }
+}
+
 function winCon() {
-    if (playerOnePlayed == true & playerTwoPlayed == true) {
-        if (cardOneWorth > cardTwoWorth) {
+    //if (playerOnePlayed == true & playerTwoPlayed == true) {
+        if (playerCardValue > opponentCardValue) {
             p1Wins++
         }
-        else if (playerTwoPlayed > playerOnePlayed) {
+        else if (playerCardValue < opponentCardValue) {
             p2Wins++
         }
-        else {
-            alert("Commence War")
+        else { // values are equal
+            console.log("Commence War");
             initiateWar();
         }
-    }
-    else {
-        alert("Please, Wait for your opponent")
-    }
+    //}
+    //else {
+    //    alert("Please, Wait for your opponent")
+    //}
 
 }
 
@@ -261,7 +366,6 @@ function initiateWar() {
 
         //Sanity Checks
         console.log(warDrawUrl);
-
 
     });
 }
@@ -313,7 +417,7 @@ database.ref("/messages").on("child_added", function (snapshot) {
             try {
                 responsiveVoice.speak(newChat.message);
             }
-            catch(err) {
+            catch (err) {
                 console.log("voice error: " + err.message);
             }
         }

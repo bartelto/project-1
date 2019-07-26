@@ -14,11 +14,6 @@ body {
     text-decoration: underline;
 }
 
-.input-group {
-    width: 40%;
-    margin: 0 auto;
-}
-
 .card-body {
     background-color: #82A67C;
 }

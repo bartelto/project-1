@@ -159,6 +159,7 @@ database.ref("/players").on("child_added", function (snapshot) {
 function startGame() {
     // show game area & chat box
 
+    $("#instructions").hide();
     $("#login-screen").hide();
     $("#game-screen").show();
     $("#chat-list").empty();

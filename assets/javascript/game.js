@@ -11,6 +11,7 @@ var cardTwoWorth = "";
 var p1Wins = 0;
 var p2Wins = 0;
 var inWar = false;
+var isPlayer1 = false; // Player 1 is the first to log on, and will create the deck and share it with the other player
 
 $("#game-screen").hide();
 
@@ -97,6 +98,7 @@ $("#submit-screen-name").click(function (event) {
 
     playerName = $("#input-screen-name").val();
     addingPlayerToDatabase = true;
+
     playerRef = database.ref("/players").push({
         name: playerName
     });
@@ -106,14 +108,15 @@ $("#submit-screen-name").click(function (event) {
     // Remove user from the players list when they disconnect.
     playerRef.onDisconnect().remove();
 
-    //++Siva
-    // Remove deck from the decks list when players disconnect
-    if (deckRef.length > 0)
-        deckRef.onDisconnect().remove();
-    //--Siva
+    if (playerCount === 1) {
+        console.log("I am Player 1");
+        isPlayer1 = true;
+    } else if (playerCount === 2) {
+        console.log("I am Player 2");
+    } 
 
     if (playerKey !== "" && opponentKey !== "") {
-        startGame()
+        startGame();
     }
 })
 
@@ -138,7 +141,7 @@ database.ref("/players").on("child_added", function (snapshot) {
         opponentName = snapshot.val().name;
     }
     if (playerKey !== "" && opponentKey !== "") {
-        startGame()
+        startGame();
     }
 });
 
@@ -164,29 +167,33 @@ function startGame() {
     var queryURL = "https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1"
 
 
-    $.ajax({
-        url: queryURL,
-        method: "GET"
-    }).then(function (response) {
-        //set variable equal to id of deck
-        deckId = response.deck_id;
-        //Sanity Checks
-        console.log(deckId);
+    if (isPlayer1) { // Player 1 "deals" the deck
+        $.ajax({
+            url: queryURL,
+            method: "GET"
+        }).then(function (response) {
+            //set variable equal to id of deck
+            deckId = response.deck_id;
+            //Sanity Checks
+            console.log("deckID: " + deckId);
 
+            //++Siva
+            //addingDeckToDatabase = true;
+            deckRef = database.ref("/decks").push({
+                deckId: deckId,
+                to: opponentKey // so the opponent knows the deck is for them
+            });
+            //deckKey = deckRef.key;
+            //addingDeckToDatabase = false;
+            //-Siva
 
-    });
-
-    //++Siva
-    addingDeckToDatabase = true;
-    deckRef = database.ref("/decks").push({
-        deckId: deckId,
-        playerKey: playerKey,
-        opponentKey: opponentKey
-    });
-    deckKey = deckRef.key;
-    addingDeckToDatabase = false;
-    //-Siva
-
+            //++Siva
+            // Remove deck from the decks list when players disconnect
+            //if (deckRef.length > 0)
+            deckRef.onDisconnect().remove();
+            //--Siva
+        });
+    }
 
     //when player deck is clicked
     $("#player-deck").on("click", function () {
@@ -199,7 +206,18 @@ function startGame() {
             playWarCard();
         }
     });
+
+
 }
+
+database.ref("/decks").on("child_added", function (snapshot) {
+    let newDeck = snapshot.val();
+    if (newDeck.to === playerKey) {
+        deckId = newDeck.deckId;
+        console.log("deckID: " + deckId);
+    }
+});
+
 
 function playCard() {
     //* boolean: ready for the next battle?
@@ -216,16 +234,15 @@ function playCard() {
         //Sanity Checks
         console.log(cardCode);
         console.log(cardWorth)
-        if (cardWorth = King) {
+        if (cardWorth === "KING") {
             cardWorth = 13;
         }
-        if (cardWorth = Queen) {
+        if (cardWorth === "QUEEN") {
             cardWorth = 12;
         }
-        if (cardWorth = Jack) {
+        if (cardWorth === "JACK") {
             cardWorth = 11;
         }
-
 
         winCon();
         setCardValue("#player-card", cardCode);

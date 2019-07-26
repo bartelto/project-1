@@ -73,6 +73,7 @@
     display: flex;
     justify-content: center; /* align horizontal */
     align-items: center; /* align vertical */
+    background-color: white;
 }   
 
 .playing-card {
@@ -93,14 +94,15 @@
     font-size: 30pt;
     position: absolute;
     right: 0;
-    bottom: -10px;
+    bottom: -10px;  
     transform: rotate(180deg);
 
 }
 
 .playing-card.no-card {
-    border: dashed 5px lightcoral;
+    border: dashed 5px white;
     box-shadow: none;
+    background-color: transparent
 }
 
 .spade,

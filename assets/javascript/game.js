@@ -1,3 +1,7 @@
+// First player to login is Player 1
+// Second player to login is Player 2
+// Player 1 initiates game communication with Player 2; Player 2 simply responds.
+
 //Global Variables---------------------------------------------------
 var deckId = "";
 var drawnCard = "";
@@ -6,12 +10,15 @@ var cardValue = "";
 //Firebase Variables=================================================
 var playerOnePlayed = false;
 var playerTwoPlayed = false;
-var cardOneWorth = "";
-var cardTwoWorth = "";
+var playerCardValue = 0;
+var opponentCardValue = 0;
+var playerCardCode = "";
+var opponentCardCode = "";
 var p1Wins = 0;
 var p2Wins = 0;
 var inWar = false;
 var isPlayer1 = false; // Player 1 is the first to log on, and will create the deck and share it with the other player
+var playRef = []; // reference to a play, as stored in the database.
 
 $("#game-screen").hide();
 
@@ -145,7 +152,10 @@ database.ref("/players").on("child_added", function (snapshot) {
     }
 });
 
-// Game Logic================================================================================
+////////////////
+// Game Logic //
+////////////////
+
 function startGame() {
     // show game area & chat box
 
@@ -224,32 +234,49 @@ function playCard() {
     var readyToPlay = true;
     // draw from deck API
     var drawnCardUrl = "https://deckofcardsapi.com/api/deck/" + deckId + "/draw/?count=1"
+
     $.ajax({
         url: drawnCardUrl,
         method: "GET"
     }).then(function (response) {
         //set variable equal to card code and value
-        var cardCode = response.cards[0].code;
-        var cardWorth = response.cards[0].value;
+        playerCardCode = response.cards[0].code;
+        playerCardValue = calcCardValue(response.cards[0].value);
+
         //Sanity Checks
-        console.log(cardCode);
-        console.log(cardWorth)
-        if (cardWorth === "KING") {
-            cardWorth = 13;
-        }
-        if (cardWorth === "QUEEN") {
-            cardWorth = 12;
-        }
-        if (cardWorth === "JACK") {
-            cardWorth = 11;
-        }
+        console.log(playerCardCode);
+        console.log(playerCardValue);
 
-        winCon();
-        setCardValue("#player-card", cardCode);
+        setCardValue("#player-card", playerCardCode); // display card on screen
 
+        if (isPlayer1) { // P1 sends their cardCode to P2
+            playRef = database.ref("/plays").push({
+                cardCode1: playerCardCode,
+                to: opponentKey // so the opponent knows the deck is for them
+            });
+            playRef.onDisconnect().remove();
+
+            // P1 listens to Firebase for P2's card
+            playRef.child("cardCode2").on("value", function(snapshot) {
+                if (snapshot.val() !== null && snapshot.val() !== "") {
+                    opponentCardCode = snapshot.val();
+                    console.log("p2 played " + opponentCardCode);
+                    // display opponent's card on screen
+                    setCardValue("#opponent-card", opponentCardCode);
+                    // both sides have played; determine winner of the hand
+                    winCon();
+                }
+            });
+        } else if (!isPlayer1 && opponentCardCode !== "") { // P1 has already played
+            // send P2 card to P1
+            console.log(`sending ${playerCardCode} to Player 1`);
+            playRef.child("cardCode2").set(playerCardCode);
+            // both sides have played; determine winner of the hand
+            winCon();
+        }
+        
     });
-    //convert cards to usable values
-
+    
 
     //* store card in firebase
     //* when child_added to firebase, update card(s) on screen
@@ -268,22 +295,58 @@ function playCard() {
 
 }
 
+// Player 2 listens to Firebase for Player 1's card
+database.ref("/plays").on("child_added", function (snapshot) {
+    let newPlay = snapshot.val();
+    if (newPlay.to === playerKey) {
+        playRef = snapshot.ref;
+        opponentCardCode = newPlay.cardCode1;
+        console.log("opponentCardCode: " + opponentCardCode);
+        opponentCardValue = calcCardValue(opponentCardCode);
+        setCardValue("#opponent-card", opponentCardCode); // display card on screen
+
+        if (playerCardValue > 0) { 
+            playRef.child("cardCode2").set(playerCardCode);
+
+            // both players have played, so determine winner
+            winCon();
+        }
+    }
+
+});
+
+
+
+function calcCardValue(code) {
+    let val = code.substring(0,1);
+    if ($.isNumeric(val)) {
+        return parseInt(val);
+    } else {
+        switch (val) {
+            case "A": return 1;
+            case "J": return 11;
+            case "Q": return 12;
+            case "K": return 13;
+        }
+    }
+}
+
 function winCon() {
-    if (playerOnePlayed == true & playerTwoPlayed == true) {
-        if (cardOneWorth > cardTwoWorth) {
+    //if (playerOnePlayed == true & playerTwoPlayed == true) {
+        if (playerCardValue > opponentCardValue) {
             p1Wins++
         }
-        else if (playerTwoPlayed > playerOnePlayed) {
+        else if (playerCardValue < opponentCardValue) {
             p2Wins++
         }
-        else {
-            alert("Commence War")
+        else { // values are equal
+            console.log("Commence War");
             initiateWar();
         }
-    }
-    else {
-        alert("Please, Wait for your opponent")
-    }
+    //}
+    //else {
+    //    alert("Please, Wait for your opponent")
+    //}
 
 }
 
@@ -302,7 +365,6 @@ function initiateWar() {
 
         //Sanity Checks
         console.log(warDrawUrl);
-
 
     });
 }

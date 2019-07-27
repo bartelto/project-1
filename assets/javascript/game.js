@@ -18,7 +18,10 @@ var p1Wins = 0;
 var p2Wins = 0;
 var inWar = false;
 var isPlayer1 = false; // Player 1 is the first to log on, and will create the deck and share it with the other player
+var isPlayer2 = false; // Variable for tracking Player 2s actions
 var playRef = []; // reference to a play, as stored in the database.
+var p1DrawYet = false;
+var p2DrawYet = false;
 
 $("#game-screen").hide();
 
@@ -120,7 +123,8 @@ $("#submit-screen-name").click(function (event) {
         isPlayer1 = true;
     } else if (playerCount === 2) {
         console.log("I am Player 2");
-    } 
+        isPlayer2 = true;
+    }
 
     if (playerKey !== "" && opponentKey !== "") {
         startGame();
@@ -148,6 +152,7 @@ database.ref("/players").on("child_added", function (snapshot) {
         opponentName = snapshot.val().name;
     }
     if (playerKey !== "" && opponentKey !== "") {
+
         startGame();
     }
 });
@@ -208,14 +213,20 @@ function startGame() {
 
     //when player deck is clicked
     $("#player-deck").on("click", function () {
-
         if (inWar === false) {
+            if (isPlayer1) {
+                //    p1DrawYet = true;
+            }
+            else if (!isPlayer1) {
+                //    p2DrawYet = true;
+            }
             // initialize the play game function
             playCard();
         }
         else {
             playWarCard();
         }
+
     });
 
 
@@ -232,7 +243,9 @@ database.ref("/decks").on("child_added", function (snapshot) {
 
 function playCard() {
     //* boolean: ready for the next battle?
-    var readyToPlay = true;
+    //if (p1DrawYet === true & p2DrawYet === true) {
+    //  p1DrawYet === false;
+    //p2DrawYet === false;
     // draw from deck API
     var drawnCardUrl = "https://deckofcardsapi.com/api/deck/" + deckId + "/draw/?count=1"
 
@@ -258,7 +271,7 @@ function playCard() {
             playRef.onDisconnect().remove();
 
             // P1 listens to Firebase for P2's card
-            playRef.child("cardCode2").on("value", function(snapshot) {
+            playRef.child("cardCode2").on("value", function (snapshot) {
                 if (snapshot.val() !== null && snapshot.val() !== "") {
                     opponentCardCode = snapshot.val();
                     console.log("p2 played " + opponentCardCode);
@@ -275,9 +288,9 @@ function playCard() {
             // both sides have played; determine winner of the hand
             winCon();
         }
-        
+
     });
-    
+
 
     //* store card in firebase
     //* when child_added to firebase, update card(s) on screen
@@ -293,8 +306,8 @@ function playCard() {
     //    * if over, declare a winner
     //    * players are removed from firebase/players
     //    * players return to login screen
-
 }
+
 
 // Player 2 listens to Firebase for Player 1's card
 database.ref("/plays").on("child_added", function (snapshot) {
@@ -306,7 +319,7 @@ database.ref("/plays").on("child_added", function (snapshot) {
         opponentCardValue = calcCardValue(opponentCardCode);
         setCardValue("#opponent-card", opponentCardCode); // display card on screen
 
-        if (playerCardValue > 0) { 
+        if (playerCardValue > 0) {
             playRef.child("cardCode2").set(playerCardCode);
 
             // both players have played, so determine winner
@@ -319,7 +332,7 @@ database.ref("/plays").on("child_added", function (snapshot) {
 
 
 function calcCardValue(code) {
-    let val = code.substring(0,1);
+    let val = code.substring(0, 1);
     if ($.isNumeric(val)) {
         return parseInt(val);
     } else {
@@ -328,39 +341,51 @@ function calcCardValue(code) {
             case "J": return 11;
             case "Q": return 12;
             case "K": return 13;
+            case "0": return 10;
         }
     }
 }
 
 function winCon() {
     //if (playerOnePlayed == true & playerTwoPlayed == true) {
-        if (playerCardValue > opponentCardValue) {
-            p1Wins++
-        }
-        else if (playerCardValue < opponentCardValue) {
-            p2Wins++
-        }
-        else { // values are equal
-            console.log("Commence War");
-            initiateWar();
-        }
-    //}
-    //else {
-    //    alert("Please, Wait for your opponent")
-    //}
+    if (playerCardValue > opponentCardValue) {
+        p1Wins++
+        console.log("Player One has " + p1Wins + " Wins");
+    }
+    else if (playerCardValue < opponentCardValue) {
+        p2Wins++
+        console.log("Player Two has " + p2Wins + " Wins");
+    }
+    else { // values are equal
+        console.log("Commence War");
+        initiateWar();
+    }
+    testGameOver();
+}
+
+function testGameOver() {
+    if (p1Wins >= 26) {
+        alert("Player One is the Winner!")
+    }
+    else if (p2Wins >= 26) {
+        alert("Player Two is the Winner!")
+    }
 
 }
+//}
+//else {
+//    alert("Please, Wait for your opponent")
+//} 
+
+//  }
 
 function initiateWar() {
     inWar === true;
-    var warDrawUrl = "https://deckofcardsapi.com/api/deck/" + deckId + "/draw/?count=3"
+    var warDrawUrl = "https://deckofcardsapi.com/api/deck/" + deckId + "/draw/?count=1"
     $.ajax({
         url: warDrawUrl,
         method: "GET"
     }).then(function (response) {
-        var warCard1 = response.cards[0].code;
-        var warCard2 = response.cards[1].code;
-        var warCard3 = response.cards[2].code;
 
         //Need to update html to have war cards update
 
@@ -370,17 +395,17 @@ function initiateWar() {
     });
 }
 
-function playWarCard() {
-    var drawnCardUrl = "https://deckofcardsapi.com/api/deck/" + deckId + "/draw/?count=1"
-    $.ajax({
-        url: drawnCardUrl,
-        method: "GET"
-    }).then(function (response) {
-        //set variable equal to card code and value
-        var cardWorth = response.cards[0].value;
-        winCon();
-    })
-}
+//function playWarCard() {
+//  var drawnCardUrl = "https://deckofcardsapi.com/api/deck/" + deckId + "/draw/?count=1"
+// $.ajax({
+//   url: drawnCardUrl,
+//  method: "GET"
+//}).then(function (response) {
+//set variable equal to card code and value
+//  var cardWorth = response.cards[0].value;
+// winCon();
+//})
+// }
 
 
 // Chat Logic=======================================================================================================

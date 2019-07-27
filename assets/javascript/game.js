@@ -49,10 +49,17 @@ var database = firebase.database();
 
 setCardValue("#player-card", cardValue);
 setCardValue("#opponent-card", "");
-//setCardValue("#player-wild-1", "8C");
-//setCardValue("#player-wild-2", "JS");
+$("#player-war-1").hide();
+$("#player-war-2").hide();
+$("#player-war-3").hide();
+$("#player-war-4").hide();
+$("#opponent-war-1").hide();
+$("#opponent-war-2").hide();
+$("#opponent-war-3").hide();
+$("#opponent-war-4").hide();
 
 function setCardValue(cardId, cardCode) {
+    
     if (cardCode === "") {
         $(cardId).removeClass("spade club heart diamond");
         $(cardId).addClass("playing-card no-card");
@@ -277,6 +284,7 @@ function playCard() {
             playRef.child("cardCode2").on("value", function (snapshot) {
                 if (snapshot.val() !== null && snapshot.val() !== "") {
                     opponentCardCode = snapshot.val();
+                    opponentCardValue = calcCardValue(opponentCardCode);
                     console.log("p2 played " + opponentCardCode);
                     // display opponent's card on screen
                     setCardValue("#opponent-card", opponentCardCode);
@@ -353,17 +361,17 @@ function winCon() {
     //if (playerOnePlayed == true & playerTwoPlayed == true) {
     if (playerCardValue > opponentCardValue) {
         p1Wins += 2; // collect both cards
-        console.log(playerName + " has " + p1Wins + " Wins");
+        console.log(playerName + " has " + p1Wins + " wins");
         $("#player-score p").text(p1Wins);
     }
     else if (playerCardValue < opponentCardValue) {
         p2Wins += 2; // collect both cards
-        console.log(opponentName + " has " + p2Wins + " Wins");
+        console.log(opponentName + " has " + p2Wins + " wins");
         $("#opponent-score p").text(p2Wins);
     }
     else { // values are equal
         console.log("Commence War");
-        initiateWar();
+        // initiateWar(); // commenting this out until the war logic is ready
     }
     testGameOver();
 
@@ -382,10 +390,10 @@ function winCon() {
 
 function testGameOver() {
     if (p1Wins >= 26) {
-        alert("Player One is the Winner!")
+        alert("You are the winner!")
     }
     else if (p2Wins >= 26) {
-        alert("Player Two is the Winner!")
+        alert(`${opponentName} is the Winner!`)
     }
 
 }
@@ -398,17 +406,49 @@ function testGameOver() {
 
 function initiateWar() {
     inWar === true;
-    var warDrawUrl = "https://deckofcardsapi.com/api/deck/" + deckId + "/draw/?count=1"
+    var warDrawUrl = "https://deckofcardsapi.com/api/deck/" + deckId + "/draw/?count=4"
     $.ajax({
         url: warDrawUrl,
         method: "GET"
     }).then(function (response) {
+        let childToWatch = ""; // the name of the child value to watch for the opponent's "war" card
+
+        playerCardCode = response.cards[3].code;
+        playerCardValue = calcCardValue(response.cards[3].value);
+
+        // store 4th card value to Firebase
+        if (isPlayer1) {
+            playRef.child("warCode1").set(playerCardCode);
+            childToWatch = "warCode2";
+        } else {
+            playRef.child("warCode2").set(playerCardCode);
+            childToWatch = "warCode1";
+        }
 
         //Need to update html to have war cards update
+        $("#player-war-1").show();
+        $("#player-war-2").show();
+        $("#player-war-3").show();
+        $("#player-war-4").show();
+
+        // 4th card drawn is shown face-up
+        setCardValue("#player-war-4", playerCardCode);
 
         //Sanity Checks
-        console.log(warDrawUrl);
+        console.log(playerCardCode);
 
+        // Create listener to check for other player's "war" card
+        playRef.child(childToWatch).on("value", function (snapshot) {
+            if (snapshot.val() !== null && snapshot.val() !== "") {
+                opponentCardCode = snapshot.val();
+                opponentCardValue = calcCardValue(opponentCardCode);
+                console.log("during war, opponent played " + opponentCardCode);
+                // display opponent's card on screen
+                setCardValue("#opponent-war-4", opponentCardCode);
+                // both sides have played; determine winner of the hand
+                //winCon();
+            }
+        });
     });
 }
 

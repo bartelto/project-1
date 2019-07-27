@@ -103,25 +103,32 @@
                             <div class="card">
                                 <div class="card-body">
                                     <h5 class="card-title">Battle Area</h5>
-                                    <div id="opponent-card" class="playing-card"></div>
-                                    <div id="player-card" class="playing-card"></div>
-
-                                    <!--<div class="col-sm-6">-->
-                                    <!--<div class="card">
-                                                <div class="card-body">
-                                                    <h5 class="card-title">P1 Card</h5>
-
-                                                </div>
-                                            </div>-->
-                                    <!--</div>-->
-                                    <!--<div class="col-sm-6">-->
-                                    <!--<div class="card">
-                                                <div class="card-body">
-                                                    <h5 class="card-title">P2 Card</h5>
-
-                                                </div>
-                                            </div> -->
-                                    <!--</div>-->
+                                    <div class="row">
+                                        <div class="col">
+                                            <div id="opponent-card" class="playing-card"></div>
+                                        </div>
+                                        <div class="col">
+                                            <div id="opponent-war-1" class="playing-card back"></div>
+                                            <div id="opponent-war-2" class="playing-card back"></div>
+                                            <div id="opponent-war-3" class="playing-card back"></div>
+                                        </div>
+                                        <div class="col">
+                                            <div id="opponent-war-4" class="playing-card"></div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <div id="player-card" class="playing-card"></div>
+                                        </div>
+                                        <div class="col">
+                                            <div id="player-war-1" class="playing-card back"></div>
+                                            <div id="player-war-2" class="playing-card back"></div>
+                                            <div id="player-war-3" class="playing-card back"></div>
+                                        </div>
+                                        <div class="col">
+                                            <div id="player-war-4" class="playing-card"></div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -187,11 +194,10 @@
 
     </div>
  
-    <!--Workaround to bypass following error in in console
-        	Uncaught TypeError: url.indexOf is not a function
-            at jQuery.fn.init.jQuery.fn.load (jquery-3.4.1.js:10091)
-            at responsivevoice.js?key=5YN7d9Mj:339-->
-    <!--script src="https://code.responsivevoice.org/responsivevoice.js?key=5YN7d9Mj"></script-->
+    <!--ResponsiveVoice code may cause errors if run outside the public GitHub page,
+    but that shouldn't interfere with gameplay functionality. If the errors bother you,
+    comment out the following line:-->
+    <script src="https://code.responsivevoice.org/responsivevoice.js?key=5YN7d9Mj"></script>
 
     <script src="assets/javascript/game.js"></script>
 </body>

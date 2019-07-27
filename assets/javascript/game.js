@@ -59,7 +59,7 @@ $("#opponent-war-3").hide();
 $("#opponent-war-4").hide();
 
 function setCardValue(cardId, cardCode) {
-    
+
     if (cardCode === "") {
         $(cardId).removeClass("spade club heart diamond");
         $(cardId).addClass("playing-card no-card");
@@ -385,7 +385,7 @@ function winCon() {
         setCardValue("#opponent-card", "");
         clickDisabled = false; // allow click for next hand
     }, 3000);
-    
+
 }
 
 function testGameOver() {

@@ -1,7 +1,7 @@
 /* Screen styling */
 
 .avatar {
-    width: 140px;
+    width: 110px;
     border-radius: 50%;
 }
 
@@ -35,27 +35,6 @@
     margin-right: 10px;
 }
 
-/*
-#opponent-card {
-    top: 200px;
-    left: 300px;
-}
-
-#player-card {
-    top: 350px;
-    left: 300px;
-}
-
-#opponent-deck {
-    top: 32px;
-    left: 292px;
-}
-
-#player-deck {  
-    top: 510px;
-    left: 292px;
-}
-*/
 #player-wild-1 {
     top: 350px;
     left: 450px;
@@ -64,6 +43,14 @@
 #player-wild-2 {
     top: 350px;
     left: 500px;
+}
+
+.scoreboard {
+    text-align: center;
+}
+
+.scoreboard p {
+    font-size: 24px;
 }
 
 /* Playing card styling */
@@ -76,7 +63,6 @@
     border: solid black 1px;
     border-radius: 10px;
     margin: 5px;
-    display: flex;
     justify-content: center; /* align horizontal */
     align-items: center; /* align vertical */
     background-color: white;
@@ -87,10 +73,12 @@
     vertical-align: middle;
     box-shadow: 2px 2px 2px #888888;
     font-size: 50px;
+    line-height: 140px;
 }
 
 .playing-card::before {
-    font-size: 30pt;    
+    font-size: 30pt;  
+    line-height: 40pt;  
     position: absolute;
     left: 0;
     top: -10px;
@@ -98,6 +86,7 @@
 
 .playing-card::after {
     font-size: 30pt;
+    line-height: 40pt;  
     position: absolute;
     right: 0;
     bottom: -10px;  
@@ -174,4 +163,28 @@
         7px 7px 0px white,
         8px 8px 0px black,
         10px 10px 2px #888888;;  
+}
+
+#opponent-war-1,
+#opponent-war-2,
+#opponent-war-3,
+#player-war-1,
+#player-war-2,
+#player-war-3 {
+    position: absolute;
+}
+
+#opponent-war-1,
+#player-war-1 {
+    left: 0px;
+}
+
+#opponent-war-2,
+#player-war-2 {
+    left: 25px;
+}
+
+#opponent-war-3,
+#player-war-3 {
+    left: 50px;
 }

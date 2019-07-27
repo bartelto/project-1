@@ -42,7 +42,7 @@
         </div>
         <div id="login-screen" class="container">
             <div class="row">
-                <div class="col-sm-4">
+                <div class="col-sm-4 text-center">
                     <h3>Your avatar</h3>
                     <img id="login-avatar" class="avatar" src="https://api.adorable.io/avatars/400/player.png">
                 </div>
@@ -71,13 +71,19 @@
                                     <!--<h5 class="card-title">Player 1 Deck</h5>
                                         <p class="card-text">this will be where player 1 deck sits</p>-->
                                     <div class="row">
-                                        <div class="col-4">
+                                        <div class="col-4 text-center">
                                             <p id="opponent-name">Opponent</p>
                                             <img src="https://api.adorable.io/avatars/400/opponent.png"
                                                 class="avatar opponent-avatar">
                                         </div>
-                                        <div class="col-8">
+                                        <div class="col-4 text-center">
                                             <div id="opponent-deck" class="deck"></div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div id="opponent-score" class="scoreboard">
+                                                <h3>Score:</h3>
+                                                <p>0</p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -97,25 +103,32 @@
                             <div class="card">
                                 <div class="card-body">
                                     <h5 class="card-title">Battle Area</h5>
-                                    <div id="opponent-card" class="playing-card"></div>
-                                    <div id="player-card" class="playing-card"></div>
-
-                                    <!--<div class="col-sm-6">-->
-                                    <!--<div class="card">
-                                                <div class="card-body">
-                                                    <h5 class="card-title">P1 Card</h5>
-
-                                                </div>
-                                            </div>-->
-                                    <!--</div>-->
-                                    <!--<div class="col-sm-6">-->
-                                    <!--<div class="card">
-                                                <div class="card-body">
-                                                    <h5 class="card-title">P2 Card</h5>
-
-                                                </div>
-                                            </div> -->
-                                    <!--</div>-->
+                                    <div class="row">
+                                        <div class="col">
+                                            <div id="opponent-card" class="playing-card"></div>
+                                        </div>
+                                        <div class="col">
+                                            <div id="opponent-war-1" class="playing-card back"></div>
+                                            <div id="opponent-war-2" class="playing-card back"></div>
+                                            <div id="opponent-war-3" class="playing-card back"></div>
+                                        </div>
+                                        <div class="col">
+                                            <div id="opponent-war-4" class="playing-card"></div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <div id="player-card" class="playing-card"></div>
+                                        </div>
+                                        <div class="col">
+                                            <div id="player-war-1" class="playing-card back"></div>
+                                            <div id="player-war-2" class="playing-card back"></div>
+                                            <div id="player-war-3" class="playing-card back"></div>
+                                        </div>
+                                        <div class="col">
+                                            <div id="player-war-4" class="playing-card"></div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -125,13 +138,19 @@
                             <div class="card">
                                 <div class="card-body">
                                     <div class="row">
-                                        <div class="col-4">
+                                        <div class="col-4 text-center">
                                             <p id="player-name">Player</p>
                                             <img src="https://api.adorable.io/avatars/400/player.png"
                                                 class="avatar player-avatar">
                                         </div>
-                                        <div class="col-8">
+                                        <div class="col-4 text-center">
                                             <div id="player-deck" class="deck"></div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div id="player-score" class="scoreboard">
+                                                <h3>Score:</h3>
+                                                <p>0</p>
+                                            </div>
                                         </div>
                                     </div>
                                     <!--<h5 class="card-title">Player 2 Deck</h5>
@@ -175,11 +194,10 @@
 
     </div>
  
-    <!--Workaround to bypass following error in in console
-        	Uncaught TypeError: url.indexOf is not a function
-            at jQuery.fn.init.jQuery.fn.load (jquery-3.4.1.js:10091)
-            at responsivevoice.js?key=5YN7d9Mj:339-->
-    <!--script src="https://code.responsivevoice.org/responsivevoice.js?key=5YN7d9Mj"></script-->
+    <!--ResponsiveVoice code may cause errors if run outside the public GitHub page,
+    but that shouldn't interfere with gameplay functionality. If the errors bother you,
+    comment out the following line:-->
+    <script src="https://code.responsivevoice.org/responsivevoice.js?key=5YN7d9Mj"></script>
 
     <script src="assets/javascript/game.js"></script>
 </body>

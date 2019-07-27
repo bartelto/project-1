@@ -6,6 +6,7 @@
 var deckId = "";
 var drawnCard = "";
 var cardValue = "";
+var clickDisabled = false;
 
 //Firebase Variables=================================================
 var playerOnePlayed = false;
@@ -55,6 +56,7 @@ function setCardValue(cardId, cardCode) {
     if (cardCode === "") {
         $(cardId).removeClass("spade club heart diamond");
         $(cardId).addClass("playing-card no-card");
+        $(cardId).text("");
         return;
     }
 
@@ -213,6 +215,8 @@ function startGame() {
 
     //when player deck is clicked
     $("#player-deck").on("click", function () {
+        if (clickDisabled) return;
+        clickDisabled = true;
         if (inWar === false) {
             if (isPlayer1) {
                 //    p1DrawYet = true;
@@ -222,8 +226,7 @@ function startGame() {
             }
             // initialize the play game function
             playCard();
-        }
-        else {
+        } else {
             playWarCard();
         }
 
@@ -349,18 +352,32 @@ function calcCardValue(code) {
 function winCon() {
     //if (playerOnePlayed == true & playerTwoPlayed == true) {
     if (playerCardValue > opponentCardValue) {
-        p1Wins++
-        console.log("Player One has " + p1Wins + " Wins");
+        p1Wins += 2; // collect both cards
+        console.log(playerName + " has " + p1Wins + " Wins");
+        $("#player-score p").text(p1Wins);
     }
     else if (playerCardValue < opponentCardValue) {
-        p2Wins++
-        console.log("Player Two has " + p2Wins + " Wins");
+        p2Wins += 2; // collect both cards
+        console.log(opponentName + " has " + p2Wins + " Wins");
+        $("#opponent-score p").text(p2Wins);
     }
     else { // values are equal
         console.log("Commence War");
         initiateWar();
     }
     testGameOver();
+
+    setTimeout(function () {
+        // reset everything related to the hand
+        playerCardValue = 0;
+        opponentCardValue = 0;
+        playerCardCode = "";
+        opponentCardCode = "";
+        setCardValue("#player-card", "");
+        setCardValue("#opponent-card", "");
+        clickDisabled = false; // allow click for next hand
+    }, 3000);
+    
 }
 
 function testGameOver() {

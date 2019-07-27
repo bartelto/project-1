@@ -1,7 +1,7 @@
 /* Screen styling */
 
 .avatar {
-    width: 140px;
+    width: 110px;
     border-radius: 50%;
 }
 
@@ -35,27 +35,6 @@
     margin-right: 10px;
 }
 
-/*
-#opponent-card {
-    top: 200px;
-    left: 300px;
-}
-
-#player-card {
-    top: 350px;
-    left: 300px;
-}
-
-#opponent-deck {
-    top: 32px;
-    left: 292px;
-}
-
-#player-deck {  
-    top: 510px;
-    left: 292px;
-}
-*/
 #player-wild-1 {
     top: 350px;
     left: 450px;
@@ -64,6 +43,14 @@
 #player-wild-2 {
     top: 350px;
     left: 500px;
+}
+
+.scoreboard {
+    text-align: center;
+}
+
+.scoreboard p {
+    font-size: 24px;
 }
 
 /* Playing card styling */

@@ -140,6 +140,7 @@ $("#submit-screen-name").click(function (event) {
     }
 })
 
+/*
 database.ref("/players").on("value", function (snapshot) {
     //console.log("num players changed");
     playerCount = snapshot.numChildren();
@@ -154,6 +155,7 @@ database.ref("/players").on("value", function (snapshot) {
     }
 });
 
+
 database.ref("/players").on("child_added", function (snapshot) {
     //console.log("child added");
     if ((snapshot.key !== playerKey) && !addingPlayerToDatabase) {
@@ -165,6 +167,52 @@ database.ref("/players").on("child_added", function (snapshot) {
         startGame();
     }
 });
+*/
+
+// New login logic
+database.ref("/players").on("child_added", function(snapshot) {
+    if (snapshot.key !== playerKey) { //not _this_ player
+        let newPlayer = $("<button>")
+            .text(snapshot.val().name)  
+            .addClass("list-group-item list-group-item-action competitor")
+            .attr('data-key', snapshot.key)
+            .attr('data-toggle', "modal")
+            .attr('data-target', '#challenge-modal')
+            .prepend(`<img src="https://api.adorable.io/avatars/400/${snapshot.val().name}.png">`);
+        if (playerKey === "") { // player is not logged in yet
+            newPlayer.addClass("disabled"); 
+        }
+        $("#players-list").append(newPlayer);
+        $("#no-competitors").hide();
+    }
+});
+
+function flagThisPlayer (player) {
+    newBadge = $("<span>")
+        .text("You")
+        .addClass("badge badge-primary");
+    player
+        .text(player.text()+" ")
+        .removeClass("competitor")
+        .addClass("disabled")
+        .append(newBadge);
+}
+
+database.ref("/players").on("child_removed", function(snapshot) {
+    $(`button[data-key=${snapshot.key}]`).remove();
+    if ($("#players-list li").length === 0) {
+        $("#no-competitors").show(2000);
+    }
+
+    if (snapshot.key === opponentKey) {
+        $("#instructions").text(`${opponentName} has left the game. Choose a different competitor to play again.`);
+        opponentKey = "";
+        opponentName = "";
+        $("#game-area").hide();
+        $("#competitors").show(2000);
+    }
+});
+
 
 ////////////////
 // Game Logic //

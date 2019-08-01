@@ -17,17 +17,6 @@
 </head>
 
 <body>
-    <!--
-    <section id="login-screen">
-    
-    </section>
-    <section id="game-screen">
-
-        <div id="player-wild-1" class="playing-card back"></div>
-        <div id="player-wild-2" class="playing-card"></div>
-        
-    </section>
--->
     <div class="content">
         <div class="jumbotron jumbotron-fluid">
             <div class="container">
@@ -42,12 +31,11 @@
         </div>
         <div id="login-screen" class="container">
             <div class="row">
-                <div class="col-sm-4 text-center">
+                <div class="col-sm-3 text-center">
                     <h3>Your avatar</h3>
                     <img id="login-avatar" class="avatar" src="https://api.adorable.io/avatars/400/player.png">
                 </div>
-
-                <div class="col-sm-8">
+                <div class="col-sm-5">
                     <form>
                         <div class="form-group">
                             <label for="input-screen-name" id="label-screen-name">Your screen name:</label>
@@ -59,8 +47,15 @@
                         <button type="submit" id="submit-screen-name" class="btn btn-primary">Let's go!</button>
                     </form>
                 </div>
+                <div class="col-sm-3 mx-auto">
+                    <h3>Available competitors:  </h3>
+                    <h4 id="no-competitors">none</h4>
+                    <div class="list-group" id="players-list">
+                    </div>
+                </div>
             </div>
         </div>
+
         <div id="game-screen" class="container">
             <div class="row">
                 <div class="col-sm-8">
@@ -68,8 +63,6 @@
                         <div class="col">
                             <div class="card">
                                 <div class="card-body">
-                                    <!--<h5 class="card-title">Player 1 Deck</h5>
-                                        <p class="card-text">this will be where player 1 deck sits</p>-->
                                     <div class="row">
                                         <div class="col-4 text-center">
                                             <p id="opponent-name">Opponent</p>
@@ -89,14 +82,6 @@
                                 </div>
                             </div>
                         </div>
-                        <!--<div class="col-sm-6">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Player 1 Winning Cards</h5>
-                                        <p class="card-text">this will be where player 1 winning cards sit</p>
-                                    </div>
-                                </div>
-                            </div>-->
                     </div>
                     <div class="row">
                         <div class="col">
@@ -153,20 +138,9 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <!--<h5 class="card-title">Player 2 Deck</h5>
-                                        <p class="card-text">this will be where player 2 deck sits</p>-->
-
                                 </div>
                             </div>
                         </div>
-                        <!--<div class="col-sm-6">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Player 2 Winning Cards</h5>
-                                        <p class="card-text">this will be where player 2 winning cards sit.</p>
-                                    </div>
-                                </div>
-                            </div>-->
                     </div>
                 </div>
                 <div class="col-sm-4">

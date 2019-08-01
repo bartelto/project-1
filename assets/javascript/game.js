@@ -121,6 +121,7 @@ $("#submit-screen-name").click(function (event) {
     playerRef = database.ref("/players").push({
         name: playerName
     });
+    console.log("about to get key");
     playerKey = playerRef.key;
     addingPlayerToDatabase = false;
 
@@ -171,32 +172,27 @@ database.ref("/players").on("child_added", function (snapshot) {
 
 // New login logic
 database.ref("/players").on("child_added", function(snapshot) {
-    if (snapshot.key !== playerKey) { //not _this_ player
-        let newPlayer = $("<button>")
-            .text(snapshot.val().name)  
-            .addClass("list-group-item list-group-item-action competitor")
-            .attr('data-key', snapshot.key)
-            .attr('data-toggle', "modal")
-            .attr('data-target', '#challenge-modal')
-            .prepend(`<img src="https://api.adorable.io/avatars/400/${snapshot.val().name}.png">`);
-        if (playerKey === "") { // player is not logged in yet
-            newPlayer.addClass("disabled"); 
+    // the setTimeout ensures that the code runs after the playerKey has been captured
+    setTimeout(function() {
+        if (snapshot.key !== playerKey) { //not _this_ player
+            let newPlayer = $("<button>")
+                .text(snapshot.val().name)  
+                .addClass("list-group-item list-group-item-action competitor")
+                .attr('data-key', snapshot.key)
+                .attr('data-toggle', "modal")
+                .attr('data-target', '#challenge-modal')
+                .prepend(`<img src="https://api.adorable.io/avatars/400/${snapshot.val().name}.png">`);
+            if (playerKey === "") { // player is not logged in yet
+                newPlayer.addClass("disabled"); 
+            }
+            $("#players-list").append(newPlayer);
+            $("#no-competitors").hide();
+        } else {
+            // make sure all opponents are enabled for clicking
+            $(".competitor").removeClass("disabled");
         }
-        $("#players-list").append(newPlayer);
-        $("#no-competitors").hide();
-    }
+    },0);
 });
-
-function flagThisPlayer (player) {
-    newBadge = $("<span>")
-        .text("You")
-        .addClass("badge badge-primary");
-    player
-        .text(player.text()+" ")
-        .removeClass("competitor")
-        .addClass("disabled")
-        .append(newBadge);
-}
 
 database.ref("/players").on("child_removed", function(snapshot) {
     $(`button[data-key=${snapshot.key}]`).remove();
@@ -213,6 +209,61 @@ database.ref("/players").on("child_removed", function(snapshot) {
     }
 });
 
+// clicking on a competitor's name
+$(document).on("click", ".competitor", function() {
+    console.log("clicked " + $(this).text());
+    opponentName = $(this).text();
+    opponentKey = $(this).attr("data-key");
+
+    // show challenge modal
+    $('#challenge-modal').modal("show");
+    $("#button-challenge").attr("data-action", "challenge");
+    $("#challenge-comm").text(`Do you want to challenge ${opponentName} to play WAR?`);
+
+});
+
+// sending or accepting a challenge
+$("#button-challenge").on("click", function() {
+    console.log("clicked YES");
+    if ($(this).attr("data-action") === "challenge") {
+        $("#challenge-comm").text(`Waiting for ${opponentName} to accept your challenge!`);
+        matchRef = matchesRef.push({
+            to: opponentKey,
+            from: playerKey,
+            accepted: false
+        });
+
+        matchRef.onDisconnect().remove();
+
+        matchRef.child("accepted").on("value", function(snapshot) {
+            if (snapshot.val() === true) { // opponent has accepted the challenge
+                isChallenger = true;
+                console.log("opponent accepted!");
+                startGame();
+            }
+        });
+    } // accepting a challenge
+    else if ($(this).attr("data-action") === "accept") {
+        matchRef.child("accepted").set(true); // won't affect other children
+        $('#challenge-modal').modal("hide");
+        $("#competitors").hide();
+        // reveal game controls
+        $("#game-area").show();
+        $("#announcer").text("Choose your attack!");
+    }
+});
+
+// receiving a challenge from another player
+matchesRef.on("child_added", function(snapshot) {
+    if (snapshot.val().to === playerKey) {
+        matchRef = snapshot.ref;
+        opponentName = $(`button[data-key="${snapshot.val().from}"]`).text();
+        opponentKey = $(`button[data-key="${snapshot.val().from}"]`).attr("data-key");
+        $("#challenge-comm").text(`${opponentName} is challenging you to a game of WAR! Accept?`);
+        $("#button-challenge").attr("data-action", "accept");
+        $('#challenge-modal').modal("show");
+    }
+});
 
 ////////////////
 // Game Logic //

@@ -6,136 +6,103 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>War</title>
+    <script 
+        src="https://code.jquery.com/jquery-3.4.1.js"
+        integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" 
+        crossorigin="anonymous"></script>
+    <script
+        src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"
+        integrity="sha256-T0Vest3yCU7pafRw9r+settMBX6JkKN06dqBnpQ8d30="
+        crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="assets/css/styles.css">
     <link rel="stylesheet" href="assets/css/sandra.css">
-    <script src="https://code.jquery.com/jquery-3.4.1.js"
-        integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
     <script src="https://www.gstatic.com/firebasejs/6.3.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/6.3.0/firebase-database.js"></script>
 </head>
 
 <body>
-    <div class="content">
-        <div class="jumbotron jumbotron-fluid">
-            <div class="container">
-                <h1 class="display-4 text-center">War</h1>
-                <p id="instructions" class="text-justify">How to play:
-                    Each player gets half a deck.
-                    Click on your deck to play the top card, and the person with the higher card value wins the hand.
-                    If the players draw cards with the same value, WAR is declared and three more cards are played face-down, followed by another card face up to determine the winner.
-                    If the cards are the same value again, WAR continues until there is a winner!
-                </p>
-            </div>
+    <div class="jumbotron jumbotron-fluid">
+        <div class="container">
+            <h1 class="display-4 text-center">War</h1>
+            <p id="instructions" class="text-justify">How to play:
+                Each player gets half a deck.
+                Click on your deck to play the top card, and the person with the higher card value wins the hand.
+                If the players draw cards with the same value, WAR is declared and three more cards are played face-down, followed by another card face up to determine the winner.
+                If the cards are the same value again, WAR continues until there is a winner!
+            </p>
         </div>
-        <div id="login-screen" class="container">
-            <div class="row">
-                <div class="col-sm-3 text-center">
-                    <h3>Your avatar</h3>
-                    <img id="login-avatar" class="avatar" src="https://api.adorable.io/avatars/400/player.png">
-                </div>
-                <div class="col-sm-5">
-                    <form>
-                        <div class="form-group">
-                            <label for="input-screen-name" id="label-screen-name">Your screen name:</label>
-                            <input type="text" class="form-control" id="input-screen-name"
-                                aria-describedby="screen-name-help" placeholder="Enter a screen name">
-                            <small id="screen-name-help" class="form-text text-muted">Your avatar is uniquely generated
-                                from your screen name.</small>
-                        </div>
-                        <button type="submit" id="submit-screen-name" class="btn btn-primary">Let's go!</button>
-                    </form>
-                </div>
-                <div class="col-sm-3 mx-auto">
-                    <h3>Available competitors:  </h3>
-                    <h4 id="no-competitors">none</h4>
-                    <div class="list-group" id="players-list">
-                    </div>
-                </div>
-            </div>
-        </div>
+    </div>
 
-        <div id="game-screen" class="container">
-            <div class="row">
-                <div class="col-sm-8">
-                    <div class="row">
-                        <div class="col">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-4 text-center">
-                                            <p id="opponent-name">Opponent</p>
-                                            <img src="https://api.adorable.io/avatars/400/opponent.png"
-                                                class="avatar opponent-avatar">
-                                        </div>
-                                        <div class="col-4 text-center">
-                                            <div id="opponent-deck" class="deck"></div>
-                                        </div>
-                                        <div class="col-4">
-                                            <div id="opponent-score" class="scoreboard">
-                                                <h3>Score:</h3>
-                                                <p>0</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+    <!-- Modal - Verify/Accept Challenge -->
+    <div class="modal fade" id="challenge-modal" tabindex="-1" role="dialog" aria-labelledby="challengeModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="challengeModalLabel">Challenge?</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p id="challenge-comm"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                    <button type="button" class="btn btn-primary" id="button-challenge">Yes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="login-screen" class="container">
+        <div class="row">
+            <div class="col-sm-3 text-center">
+                <h3>Your avatar</h3>
+                <img id="login-avatar" class="avatar" src="https://api.adorable.io/avatars/400/player.png">
+            </div>
+            <div class="col-sm-5">
+                <form>
+                    <div class="form-group">
+                        <label for="input-screen-name" id="label-screen-name">Your screen name:</label>
+                        <input type="text" class="form-control" id="input-screen-name"
+                            aria-describedby="screen-name-help" placeholder="Enter a screen name">
+                        <small id="screen-name-help" class="form-text text-muted">Your avatar is uniquely generated
+                            from your screen name.</small>
                     </div>
-                    <div class="row">
-                        <div class="col">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5 class="card-title">Battle Area</h5>
-                                    <div class="row">
-                                        <div class="col">
-                                            <div id="opponent-card" class="playing-card"></div>
-                                        </div>
-                                        <div class="col">
-                                            <div id="opponent-war-1" class="playing-card back"></div>
-                                            <div id="opponent-war-2" class="playing-card back"></div>
-                                            <div id="opponent-war-3" class="playing-card back"></div>
-                                        </div>
-                                        <div class="col">
-                                            <div id="opponent-war-4" class="playing-card"></div>
-                                        </div>
+                    <button type="submit" id="submit-screen-name" class="btn btn-primary">Let's go!</button>
+                </form>
+            </div>
+            <div class="col-sm-3 mx-auto">
+                <h3>Available competitors:  </h3>
+                <h4 id="no-competitors">none</h4>
+                <div class="list-group" id="players-list">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="game-screen" class="container">
+        <div class="row">
+            <div class="col-sm-8">
+                <div class="row">
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-4 text-center">
+                                        <p id="opponent-name">Opponent</p>
+                                        <img src="https://api.adorable.io/avatars/400/opponent.png"
+                                            class="avatar opponent-avatar">
                                     </div>
-                                    <div class="row">
-                                        <div class="col">
-                                            <div id="player-card" class="playing-card"></div>
-                                        </div>
-                                        <div class="col">
-                                            <div id="player-war-1" class="playing-card back"></div>
-                                            <div id="player-war-2" class="playing-card back"></div>
-                                            <div id="player-war-3" class="playing-card back"></div>
-                                        </div>
-                                        <div class="col">
-                                            <div id="player-war-4" class="playing-card"></div>
-                                        </div>
+                                    <div class="col-4 text-center">
+                                        <div id="opponent-deck" class="deck"></div>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-4 text-center">
-                                            <p id="player-name">Player</p>
-                                            <img src="https://api.adorable.io/avatars/400/player.png"
-                                                class="avatar player-avatar">
-                                        </div>
-                                        <div class="col-4 text-center">
-                                            <div id="player-deck" class="deck"></div>
-                                        </div>
-                                        <div class="col-4">
-                                            <div id="player-score" class="scoreboard">
-                                                <h3>Score:</h3>
-                                                <p>0</p>
-                                            </div>
+                                    <div class="col-4">
+                                        <div id="opponent-score" class="scoreboard">
+                                            <h3>Score:</h3>
+                                            <p>0</p>
                                         </div>
                                     </div>
                                 </div>
@@ -143,36 +110,94 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-sm-4">
-                    <h5 class="card-title">Battle Chat</h5>
-                    <div class="input-group mb-3">
-                        <ul id="chat-list" class="list-group">
-                            <li class="list-group-item player-message"><img
-                                    src="https://api.adorable.io/avatars/400/player.png" class="avatar mini">You're
-                                going down.</li>
-                            <li class="list-group-item opponent-message"><img
-                                    src="https://api.adorable.io/avatars/400/opponent.png" class="avatar mini">Come at
-                                me.</li>
-                        </ul>
+                <div class="row">
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Battle Area</h5>
+                                <div class="row">
+                                    <div class="col">
+                                        <div id="opponent-card" class="playing-card"></div>
+                                    </div>
+                                    <div class="col">
+                                        <div id="opponent-war-1" class="playing-card back"></div>
+                                        <div id="opponent-war-2" class="playing-card back"></div>
+                                        <div id="opponent-war-3" class="playing-card back"></div>
+                                    </div>
+                                    <div class="col">
+                                        <div id="opponent-war-4" class="playing-card"></div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <div id="player-card" class="playing-card"></div>
+                                    </div>
+                                    <div class="col">
+                                        <div id="player-war-1" class="playing-card back"></div>
+                                        <div id="player-war-2" class="playing-card back"></div>
+                                        <div id="player-war-3" class="playing-card back"></div>
+                                    </div>
+                                    <div class="col">
+                                        <div id="player-war-4" class="playing-card"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="input-group mb-3">
-                        <input type="text" id="input-message" class="form-control" placeholder="Enter message here"
-                            aria-label="Recipient's username" aria-describedby="basic-addon2">
-                        <div class="input-group-append">
-                            <button id="chat-send" class="btn btn-outline-secondary" type="button">Send</button>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-4 text-center">
+                                        <p id="player-name">Player</p>
+                                        <img src="https://api.adorable.io/avatars/400/player.png"
+                                            class="avatar player-avatar">
+                                    </div>
+                                    <div class="col-4 text-center">
+                                        <div id="player-deck" class="deck"></div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div id="player-score" class="scoreboard">
+                                            <h3>Score:</h3>
+                                            <p>0</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+            <div class="col-sm-4">
+                <h5 class="card-title">Battle Chat</h5>
+                <div class="input-group mb-3">
+                    <ul id="chat-list" class="list-group">
+                        <li class="list-group-item player-message"><img
+                                src="https://api.adorable.io/avatars/400/player.png" class="avatar mini">You're
+                            going down.</li>
+                        <li class="list-group-item opponent-message"><img
+                                src="https://api.adorable.io/avatars/400/opponent.png" class="avatar mini">Come at
+                            me.</li>
+                    </ul>
+                </div>
+                <div class="input-group mb-3">
+                    <input type="text" id="input-message" class="form-control" placeholder="Enter message here"
+                        aria-label="Recipient's username" aria-describedby="basic-addon2">
+                    <div class="input-group-append">
+                        <button id="chat-send" class="btn btn-outline-secondary" type="button">Send</button>
+                    </div>
+                </div>
+            </div>
         </div>
-
     </div>
  
     <!--ResponsiveVoice code may cause errors if run outside the public GitHub page,
     but that shouldn't interfere with gameplay functionality. If the errors bother you,
     comment out the following line:-->
     <script src="https://code.responsivevoice.org/responsivevoice.js?key=5YN7d9Mj"></script>
-
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     <script src="assets/javascript/game.js"></script>
 </body>
 

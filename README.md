@@ -1,4 +1,4 @@
-# War
+# War of Words
 
 https://bartelto.github.io/project-1/
 

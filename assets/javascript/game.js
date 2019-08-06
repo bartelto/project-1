@@ -459,8 +459,11 @@ function calcCardValue(code) {
 }
 
 function winCon() {
-    //if (playerOnePlayed == true & playerTwoPlayed == true) {
+    let playerWon = false;
+    let cardDestination = "";
+    
     if (playerCardValue > opponentCardValue) {
+        playerWon = true;
         p1Wins += 2; // collect both cards
         console.log(playerName + " has " + p1Wins + " wins");
         $("#player-score p").text(p1Wins);
@@ -476,6 +479,35 @@ function winCon() {
     }
     testGameOver();
 
+    if (playerWon) {
+        cardDestination = "#player-score";
+    } else {
+        cardDestination = "#opponent-score";
+    }
+
+    let opponentMoveX = $(cardDestination).offset().left - $("#opponent-card").offset().left;
+    let opponentMoveY = $(cardDestination).offset().top - $("#opponent-card").offset().top;
+    $("#opponent-card").css({
+        transform: `rotate(10deg)`
+        })
+    .animate({
+        left: `+=${opponentMoveX}`,
+        top: `+=${opponentMoveY}`,
+        transform: 'rotate(90deg)'
+        },1000);
+
+    let playerMoveX = $(cardDestination).offset().left - $("#player-card").offset().left;
+    let playerMoveY = $(cardDestination).offset().top - $("#player-card").offset().top;
+    $("#player-card").css({
+        transform: `rotate(10deg)`
+        })
+        .animate({
+        left: `+=${playerMoveX}`,
+        top: `+=${playerMoveY}`,
+        transform: 'rotate(90deg)'
+        },1000);
+
+
     setTimeout(function () {
         // reset everything related to the hand
         playerCardValue = 0;
@@ -484,6 +516,8 @@ function winCon() {
         opponentCardCode = "";
         setCardValue("#player-card", "");
         setCardValue("#opponent-card", "");
+        $("#opponent-card").removeAttr('style'); //reset animation
+        $("#player-card").removeAttr('style'); //reset animation
         clickDisabled = false; // allow click for next hand
     }, 3000);
 

@@ -18,8 +18,7 @@ var opponentCardCode = "";
 var p1Wins = 0;
 var p2Wins = 0;
 var inWar = false;
-var isPlayer1 = false; // Player 1 is the first to log on, and will create the deck and share it with the other player
-var isPlayer2 = false; // Variable for tracking Player 2s actions
+var isChallenger = false; // The challenger ("Player 1") will create the deck and share it with the other player
 var playRef = []; // reference to a play, as stored in the database.
 var p1DrawYet = false;
 var p2DrawYet = false;
@@ -47,9 +46,6 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 var database = firebase.database();
 
-let challengesRef = database.ref("/challenges");
-let challengeRef;
-
 setCardValue("#player-card", cardValue);
 setCardValue("#opponent-card", "");
 $("#player-war-1").hide();
@@ -61,6 +57,7 @@ $("#opponent-war-2").hide();
 $("#opponent-war-3").hide();
 $("#opponent-war-4").hide();
 
+// sets the value of a card displayed on the screen
 function setCardValue(cardId, cardCode) {
 
     if (cardCode === "") {
@@ -96,7 +93,10 @@ function setCardValue(cardId, cardCode) {
 
 //startGame();
 
-// Login Logic==========================================================================
+/////////////////
+// Login Logic //
+/////////////////
+
 let playerName = "";
 let playerKey = "";
 let playerRef = [];
@@ -104,6 +104,9 @@ let opponentName = "";
 let opponentKey = "";
 let playerCount = 0;
 let addingPlayerToDatabase = false;
+
+let challengesRef = database.ref("/challenges");
+let challengeRef = [];
 
 //++Siva
 let deckRef = [];
@@ -130,10 +133,10 @@ $("#submit-screen-name").click(function (event) {
 
     // Remove user from the players list when they disconnect.
     playerRef.onDisconnect().remove();
-
+/*
     if (playerCount === 1) {
         console.log("I am Player 1");
-        isPlayer1 = true;
+     isChallenger = true;
     } else if (playerCount === 2) {
         console.log("I am Player 2");
         isPlayer2 = true;
@@ -142,6 +145,7 @@ $("#submit-screen-name").click(function (event) {
     if (playerKey !== "" && opponentKey !== "") {
         startGame();
     }
+*/
 })
 
 /*
@@ -292,7 +296,7 @@ function startGame() {
     var queryURL = "https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1"
 
 
-    if (isPlayer1) { // Player 1 "deals" the deck
+    if  (isChallenger) { // The challenger "deals" the deck
         $.ajax({
             url: queryURL,
             method: "GET"
@@ -325,10 +329,10 @@ function startGame() {
         if (clickDisabled) return;
         clickDisabled = true;
         if (inWar === false) {
-            if (isPlayer1) {
+            if  (isChallenger) {
                 //    p1DrawYet = true;
             }
-            else if (!isPlayer1) {
+            else if (!isChallenger) {
                 //    p2DrawYet = true;
             }
             // initialize the play game function
@@ -357,7 +361,7 @@ function playCard() {
     //  p1DrawYet === false;
     //p2DrawYet === false;
     // draw from deck API
-    var drawnCardUrl = "https://deckofcardsapi.com/api/deck/" + deckId + "/draw/?count=1"
+    var drawnCardUrl = `https://deckofcardsapi.com/api/deck/${deckId}/draw/?count=1`;
 
     $.ajax({
         url: drawnCardUrl,
@@ -365,7 +369,7 @@ function playCard() {
     }).then(function (response) {
         //set variable equal to card code and value
         playerCardCode = response.cards[0].code;
-        playerCardValue = calcCardValue(response.cards[0].value);
+        playerCardValue = calcCardValue(playerCardCode);
 
         //Sanity Checks
         console.log(playerCardCode);
@@ -373,7 +377,7 @@ function playCard() {
 
         setCardValue("#player-card", playerCardCode); // display card on screen
 
-        if (isPlayer1) { // P1 sends their cardCode to P2
+        if  (isChallenger) { // P1 sends their cardCode to P2
             playRef = database.ref("/plays").push({
                 cardCode1: playerCardCode,
                 to: opponentKey // so the opponent knows the deck is for them
@@ -385,14 +389,14 @@ function playCard() {
                 if (snapshot.val() !== null && snapshot.val() !== "") {
                     opponentCardCode = snapshot.val();
                     opponentCardValue = calcCardValue(opponentCardCode);
-                    console.log("p2 played " + opponentCardCode);
+                    console.log(opponentName  + " played " + opponentCardCode);
                     // display opponent's card on screen
                     setCardValue("#opponent-card", opponentCardCode);
                     // both sides have played; determine winner of the hand
                     winCon();
                 }
             });
-        } else if (!isPlayer1 && opponentCardCode !== "") { // P1 has already played
+        } else if (!isChallenger && opponentCardCode !== "") { // P1 has already played
             // send P2 card to P1
             console.log(`sending ${playerCardCode} to Player 1`);
             playRef.child("cardCode2").set(playerCardCode);
@@ -432,7 +436,6 @@ database.ref("/plays").on("child_added", function (snapshot) {
 
         if (playerCardValue > 0) {
             playRef.child("cardCode2").set(playerCardCode);
-
             // both players have played, so determine winner
             winCon();
         }
@@ -440,11 +443,9 @@ database.ref("/plays").on("child_added", function (snapshot) {
 
 });
 
-
-
 function calcCardValue(code) {
     let val = code.substring(0, 1);
-    if ($.isNumeric(val)) {
+    if ($.isNumeric(val) && parseInt(val) > 0) {
         return parseInt(val);
     } else {
         switch (val) {
@@ -517,7 +518,7 @@ function initiateWar() {
         playerCardValue = calcCardValue(response.cards[3].value);
 
         // store 4th card value to Firebase
-        if (isPlayer1) {
+        if  (isChallenger) {
             playRef.child("warCode1").set(playerCardCode);
             childToWatch = "warCode2";
         } else {

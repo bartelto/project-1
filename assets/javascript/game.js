@@ -47,6 +47,9 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 var database = firebase.database();
 
+let challengesRef = database.ref("/challenges");
+let challengeRef;
+
 setCardValue("#player-card", cardValue);
 setCardValue("#opponent-card", "");
 $("#player-war-1").hide();
@@ -227,15 +230,15 @@ $("#button-challenge").on("click", function() {
     console.log("clicked YES");
     if ($(this).attr("data-action") === "challenge") {
         $("#challenge-comm").text(`Waiting for ${opponentName} to accept your challenge!`);
-        matchRef = matchesRef.push({
+        challengeRef = challengesRef.push({
             to: opponentKey,
             from: playerKey,
             accepted: false
         });
 
-        matchRef.onDisconnect().remove();
+        challengeRef.onDisconnect().remove();
 
-        matchRef.child("accepted").on("value", function(snapshot) {
+        challengeRef.child("accepted").on("value", function(snapshot) {
             if (snapshot.val() === true) { // opponent has accepted the challenge
                 isChallenger = true;
                 console.log("opponent accepted!");
@@ -244,19 +247,15 @@ $("#button-challenge").on("click", function() {
         });
     } // accepting a challenge
     else if ($(this).attr("data-action") === "accept") {
-        matchRef.child("accepted").set(true); // won't affect other children
-        $('#challenge-modal').modal("hide");
-        $("#competitors").hide();
-        // reveal game controls
-        $("#game-area").show();
-        $("#announcer").text("Choose your attack!");
+        challengeRef.child("accepted").set(true); // won't affect other children
+        startGame();
     }
 });
 
 // receiving a challenge from another player
-matchesRef.on("child_added", function(snapshot) {
+challengesRef.on("child_added", function(snapshot) {
     if (snapshot.val().to === playerKey) {
-        matchRef = snapshot.ref;
+        challengeRef = snapshot.ref;
         opponentName = $(`button[data-key="${snapshot.val().from}"]`).text();
         opponentKey = $(`button[data-key="${snapshot.val().from}"]`).attr("data-key");
         $("#challenge-comm").text(`${opponentName} is challenging you to a game of WAR! Accept?`);
@@ -274,6 +273,8 @@ function startGame() {
 
     $("#instructions").hide();
     $("#login-screen").hide();
+    $('#challenge-modal').modal("hide");
+
     $("#game-screen").show();
     $("#chat-list").empty();
 

@@ -155,15 +155,16 @@
         linear-gradient(60deg, #dbdbdb 25%, transparent 25.5%, transparent 75%, #dbdbdb 75%, #dbdbdb 0), #ccc;
     background-position: 0 0, 0 0, 12px 21px, 12px 21px, 0 0, 12px 21px;
     background-size: 24px 42px;
+    border: solid dimgray 1px;
     box-shadow: 
         1px 1px 0px white,
-        2px 2px 0px black,
+        2px 2px 0px dimgray,
         3px 3px 0px white,
-        4px 4px 0px black,
+        4px 4px 0px dimgray,
         5px 5px 0px white,
-        6px 6px 0px black,
+        6px 6px 0px dimgray,
         7px 7px 0px white,
-        8px 8px 0px black,
+        8px 8px 0px dimgray,
         10px 10px 2px #888888;;  
 }
 

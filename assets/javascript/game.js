@@ -467,11 +467,13 @@ function winCon() {
         p1Wins += 2; // collect both cards
         console.log(playerName + " has " + p1Wins + " wins");
         $("#player-score p").text(p1Wins);
+        $("#player-score p").attr("data-after", p1Wins);
     }
     else if (playerCardValue < opponentCardValue) {
         p2Wins += 2; // collect both cards
         console.log(opponentName + " has " + p2Wins + " wins");
         $("#opponent-score p").text(p2Wins);
+        $("#opponent-score p").attr("data-after", p2Wins);
     }
     else { // values are equal
         console.log("Commence War");
@@ -599,6 +601,11 @@ function initiateWar() {
 //})
 // }
 
+//temp
+$(".scoreboard p").click(function() {
+    console.log("score clicked");
+    $(this).addClass("accent");
+});
 
 // Chat Logic=======================================================================================================
 let messagesRef = undefined;
@@ -642,7 +649,13 @@ database.ref("/messages").on("child_added", function (snapshot) {
 
         // delete message from database
         database.ref("/messages").child(snapshot.key).remove();
-
     }
+});
 
+// capture enter key to send chat message
+$(document).keypress(function(e) {
+    var keycode = (e.keyCode ? e.keyCode : e.which);
+    if (keycode == '13') {
+      $("#chat-send").click();
+    }
 });

@@ -180,26 +180,19 @@ p.accent::after {
         10px 10px 2px #888888;;  
 }
 
-#opponent-war-1,
-#opponent-war-2,
-#opponent-war-3,
-#player-war-1,
-#player-war-2,
-#player-war-3 {
-    position: absolute;
-}
 
-#opponent-war-1,
-#player-war-1 {
-    left: 0px;
-}
 
 #opponent-war-2,
 #player-war-2 {
-    left: 25px;
+    margin-left: -90px;
 }
 
 #opponent-war-3,
 #player-war-3 {
-    left: 50px;
+    margin-left: -90px;
+}
+
+#opponent-war-4,
+#player-war-4 {
+    margin-left: -90px;
 }

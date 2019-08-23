@@ -324,7 +324,7 @@ function startGame() {
         });
     }
 
-    //when player deck is clicked
+    // when the player clicks their own deck
     $("#player-deck").on("click", function () {
         if (clickDisabled) return;
         clickDisabled = true;
@@ -338,7 +338,7 @@ function startGame() {
             // initialize the play game function
             playCard();
         } else {
-            playWarCard();
+            initiateWar();
         }
 
     });
@@ -459,17 +459,16 @@ function calcCardValue(code) {
 }
 
 function winCon() {
-    let playerWon = false;
+    let playerWon = false;  
     let cardDestination = "";
-    
-    if (playerCardValue > opponentCardValue) {
+    if (false && playerCardValue > opponentCardValue) {
         playerWon = true;
         p1Wins += 2; // collect both cards
         console.log(playerName + " has " + p1Wins + " wins");
         $("#player-score p").text(p1Wins);
         $("#player-score p").attr("data-after", p1Wins);
     }
-    else if (playerCardValue < opponentCardValue) {
+    else if (false && playerCardValue < opponentCardValue) {
         p2Wins += 2; // collect both cards
         console.log(opponentName + " has " + p2Wins + " wins");
         $("#opponent-score p").text(p2Wins);
@@ -477,7 +476,9 @@ function winCon() {
     }
     else { // values are equal
         console.log("Commence War");
-        // initiateWar(); // commenting this out until the war logic is ready
+        inWar = true; // tested at the next deck click
+        clickDisabled = false;
+        return;
     }
     testGameOver();
 
@@ -487,6 +488,7 @@ function winCon() {
         cardDestination = "#opponent-score";
     }
 
+    // animate opponent's cards
     let opponentMoveX = $(cardDestination).offset().left - $("#opponent-card").offset().left;
     let opponentMoveY = $(cardDestination).offset().top - $("#opponent-card").offset().top;
     $("#opponent-card").css({
@@ -498,6 +500,7 @@ function winCon() {
         transform: 'rotate(90deg)'
         },1000);
 
+    // animate player's cards    
     let playerMoveX = $(cardDestination).offset().left - $("#player-card").offset().left;
     let playerMoveY = $(cardDestination).offset().top - $("#player-card").offset().top;
     $("#player-card").css({
@@ -511,7 +514,7 @@ function winCon() {
 
 
     setTimeout(function () {
-        // reset everything related to the hand
+        // reset everything related to the hand after 3 seconds
         playerCardValue = 0;
         opponentCardValue = 0;
         playerCardCode = "";
@@ -534,16 +537,10 @@ function testGameOver() {
     }
 
 }
-//}
-//else {
-//    alert("Please, Wait for your opponent")
-//} 
-
-//  }
 
 function initiateWar() {
-    inWar === true;
-    var warDrawUrl = "https://deckofcardsapi.com/api/deck/" + deckId + "/draw/?count=4"
+    //inWar = true;
+    var warDrawUrl = `https://deckofcardsapi.com/api/deck/${deckId}/draw/?count=4`;
     $.ajax({
         url: warDrawUrl,
         method: "GET"
@@ -562,11 +559,23 @@ function initiateWar() {
             childToWatch = "warCode1";
         }
 
-        //Need to update html to have war cards update
-        $("#player-war-1").show();
+        // Display war cards
+        for (let i=0; i<4; i++){
+            let newCard = $("<div>");
+            if (i<3){
+                newCard.addClass("playing-card back")
+                    .attr("id", `player-war-${i+1}`); 
+            } else {
+                newCard.addClass("playing-card")
+                .attr("id", `player-war-${i+1}`);
+            }
+            $("#player-area").append(newCard);
+        }
+
+        /*$("#player-war-1").show();
         $("#player-war-2").show();
         $("#player-war-3").show();
-        $("#player-war-4").show();
+        $("#player-war-4").show();*/
 
         // 4th card drawn is shown face-up
         setCardValue("#player-war-4", playerCardCode);
@@ -580,8 +589,15 @@ function initiateWar() {
                 opponentCardCode = snapshot.val();
                 opponentCardValue = calcCardValue(opponentCardCode);
                 console.log("during war, opponent played " + opponentCardCode);
+                
                 // display opponent's card on screen
                 setCardValue("#opponent-war-4", opponentCardCode);
+
+                //display oppoenent cards
+                $("#opponent-war-1").show();
+                $("#opponent-war-2").show();
+                $("#opponent-war-3").show();
+                $("#opponent-war-4").show();
                 // both sides have played; determine winner of the hand
                 //winCon();
             }
